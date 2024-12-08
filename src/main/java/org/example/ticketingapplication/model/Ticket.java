@@ -1,7 +1,10 @@
 package org.example.ticketingapplication.model;
 
+
+
 import java.math.BigDecimal;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
@@ -13,16 +16,14 @@ public class Ticket extends Event {
 
     private final String ticketId;
     private BigDecimal price;
-    private LocalDate expireDate;
-    private LocalTime expireTime;
+    private LocalDateTime expireDateTime;
     private Event event;
 
-    public Ticket(Event event, String ticketId, BigDecimal price, LocalDate expireDate, LocalTime expireTime) {
+    public Ticket(Event event, String ticketId, BigDecimal price, LocalDateTime expireDateTime, LocalTime expireTime) {
         super(event.getEventId(), event.getEventName(), event.getEventDate(), event.getEventTime(),event.getEventCategory() ,event.getEventVenue());
         this.ticketId = ticketId;
         this.price = price;
-        this.expireDate = expireDate;
-        this.expireTime = expireTime;
+        this.expireDateTime = expireDateTime;
         this.event = event;
     }
 
@@ -38,21 +39,15 @@ public class Ticket extends Event {
         this.price = price;
     }
 
-    public LocalDate getExpireDate() {
-        return expireDate;
+    public LocalDateTime getExpireDateTime() {
+        return expireDateTime;
     }
 
-    public void setExpireDate(LocalDate expireDate) {
-        this.expireDate = expireDate;
+    public void setExpireDateTime(LocalDateTime expireDateTime) {
+        this.expireDateTime = expireDateTime;
     }
 
-    public LocalTime getExpireTime() {
-        return expireTime;
-    }
 
-    public void setExpireTime(LocalTime expireTime) {
-        this.expireTime = expireTime;
-    }
 
     public Event getEvent() {
         return event;
