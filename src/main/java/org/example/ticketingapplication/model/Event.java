@@ -2,13 +2,12 @@ package org.example.ticketingapplication.model;
 
 
 
-
-
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -41,22 +40,21 @@ public class Event {
     @Column(nullable = false)
     private int ticketAvailable = maxTickets;
 
-    @OneToOne
+    @ManyToOne()
     @JoinColumn(name = "vendor_id", referencedColumnName = "vendorId")
     private Vendor vendor;
 
-
-
-//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @Transient
     private LinkedList<Ticket> tickets = new LinkedList<>();
 
-    public Event( String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets) {
+    public Event( String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets, Vendor vendor) {
         this.eventName = eventName;
         this.eventDateTime = eventDateTime;
         this.eventVenue = eventVenue;
         this.eventCategory = eventCategory;
         this.maxTickets = maxTickets;
+        this.vendor = vendor;
+
     }
 
     public Event(String eventId, String eventName, LocalDateTime eventDateTime,String eventVenue, String eventCategory, int maxTickets, Vendor vendor) {
@@ -69,6 +67,7 @@ public class Event {
         this.vendor = vendor;
     }
 
+    //Default Constructor
     public Event() {
 
     }
@@ -133,7 +132,7 @@ public class Event {
         this.ticketAvailable = ticketAvailable;
     }
 
-    public Long getVendorID() {
+    public String getVendorID() {
         return vendor.getVendorId();
     }
 
@@ -163,7 +162,7 @@ public class Event {
     }
 
 
-    public void createEventID(LinkedList<Event> eventsList){
+    public void createEventID(List<Event> eventsList){
 
         int lastIndex = 0;
         String GeneratedEventID;
@@ -176,7 +175,7 @@ public class Event {
                 GeneratedEventID = "0000-E-0001";
             }
 
-            setEventId(GeneratedEventID);
+            this.eventId = GeneratedEventID;
 
         } else {
 
@@ -191,7 +190,7 @@ public class Event {
             }
 
             GeneratedEventID = vendor.getVendorId() + "-E-" + ++lastIndex;
-            setEventId(GeneratedEventID);
+            this.eventId = GeneratedEventID;
         }
 
     }
@@ -229,6 +228,7 @@ public class Event {
         for(Ticket t : tickets){
             if(t.getTicketId().equals(ticket.getTicketId())){
                 tickets.remove(ticket);
+                ticketAvailable--;
             }
         }
     }

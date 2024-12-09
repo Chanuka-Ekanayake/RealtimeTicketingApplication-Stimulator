@@ -26,6 +26,10 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    public void addCustomer(Customer customer) {
+        customerRepository.save(customer);
+    }
+
     public Customer findCustomerById(Long id) {
         return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer with id " + id + " not found"));
     }
@@ -41,5 +45,5 @@ public class CustomerService {
     public void deleteAllCustomers() {
         customerRepository.deleteAll();
     }
-    
+
 }

@@ -4,11 +4,13 @@ package org.example.ticketingapplication.model;
 
 import jakarta.persistence.*;
 
+
 import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  -  Represents tickets for events.
@@ -28,26 +30,35 @@ public class Ticket {
     @Column(nullable = false)
     private LocalDateTime expireDateTime;
 
-//    @ManyToOne
-//    @JoinColumn(name = "event_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+
     @Transient
     private String eventID;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id",nullable = true)
     private Customer customer;
 
-    public Ticket(String eventID, String ticketId, BigDecimal price, LocalDateTime expireDateTime, LocalTime expireTime) {
+    public Ticket(Event event, String ticketId, BigDecimal price, LocalDateTime expireDateTime) {
         this.ticketId = ticketId;
         this.price = price;
         this.expireDateTime = expireDateTime;
-        this.eventID = eventID;
+        this.event = event;
+    }
+
+    public Ticket(Event event, BigDecimal price, LocalDateTime expireDateTime) {
+        this.price = price;
+        this.expireDateTime = expireDateTime;
+        this.event = event;
     }
 
     public Ticket(String eventID, BigDecimal price, LocalDateTime expireDateTime) {
+        this.eventID = eventID;
         this.price = price;
         this.expireDateTime = expireDateTime;
-        this.eventID = eventID;
     }
 
     public Ticket() {
@@ -94,6 +105,14 @@ public class Ticket {
         this.customer = customer;
     }
 
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
     @Override
     public String toString() {
         return "Ticket{" +
@@ -106,19 +125,21 @@ public class Ticket {
 
 
     //Create Unique TicketID's
-    public void createTicketID(LinkedList<Ticket> ticketsList) {
+    public void createTicketID(List<Ticket> ticketsList) {
         int lastIndex = 0;
         String GeneratedTicketID;
 
         if(ticketsList.isEmpty()){
-            if(eventID != null) {
-                GeneratedTicketID = eventID + "-T-0001";
+            if(event.getEventId() != null) {
+                GeneratedTicketID = event.getEventId() + "-T-0001";
             } else {
                 GeneratedTicketID = "0000-T-0001";
             }
 
+            this.ticketId = GeneratedTicketID;
+
         } else {
-            String lastDigits = ticketsList.getLast().getTicketId().substring(ticketsList.getLast().getTicketId().length() - 4); //Extracts the last 5 digits from the EventID
+            String lastDigits = ticketsList.getLast().getTicketId().substring(ticketsList.getLast().getTicketId().length() - 4); //Extracts the last 5 digits from the TicketID
 
             //Convert the string to integer
             try{
@@ -127,7 +148,8 @@ public class Ticket {
             catch (NumberFormatException nfe){
                 System.out.println("Invalid Event ID");
             }
-            GeneratedTicketID = eventID + "-T-" + ++lastIndex;
+            GeneratedTicketID = event.getEventId() + "-T-" + ++lastIndex;
+            this.ticketId = GeneratedTicketID;
         }
 
 

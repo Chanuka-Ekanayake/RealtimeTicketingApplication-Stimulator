@@ -5,6 +5,5 @@ package org.example.ticketingapplication.controller;
 
  */
 
-public class TicketController {
-
+public class EventController {
 }

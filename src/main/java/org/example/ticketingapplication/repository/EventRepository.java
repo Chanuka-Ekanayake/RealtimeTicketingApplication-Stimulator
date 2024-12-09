@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, String> {
     List<Event> findByEventDateTimeBefore(LocalDateTime now);
 }
 

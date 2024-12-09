@@ -22,16 +22,20 @@ public class EventService {
         return eventRepository.save(event);
     }
 
+    public void addEvent(Event event) {
+        eventRepository.save(event);
+    }
+
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
 
     public Event getEventById(String id) {
-        return eventRepository.findById(Long.valueOf(id)).orElseThrow(() -> new RuntimeException("Event with id " + id + " not found"));
+        return eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event with id " + id + " not found"));
     }
 
     public void deleteEvent(String id) {
-        eventRepository.deleteById(Long.valueOf(id));
+        eventRepository.deleteById(id);
     }
 
     public void deleteAllEvents() {

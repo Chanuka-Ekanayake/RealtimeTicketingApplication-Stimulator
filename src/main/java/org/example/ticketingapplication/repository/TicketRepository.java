@@ -13,7 +13,7 @@ import java.util.List;
 
 
 
-public interface TicketRepository extends JpaRepository<Ticket, Integer> {
+public interface TicketRepository extends JpaRepository<Ticket, String> {
 
     List<Ticket> findByExpireDateTimeBefore(LocalDateTime now);
 }

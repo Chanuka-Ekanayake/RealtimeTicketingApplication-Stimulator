@@ -27,7 +27,11 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    public Ticket getTicketById(int id) {
+    public void addTicket(Ticket ticket) {
+        ticketRepository.save(ticket);
+    }
+
+    public Ticket getTicketById(String id) {
         return ticketRepository.findById(id).orElseThrow(() -> new RuntimeException("Ticket with id " + id + " not found"));
     }
 
@@ -35,7 +39,7 @@ public class TicketService {
         return ticketRepository.findAll();
     }
 
-    public void deleteTicketById(int id) {
+    public void deleteTicketById(String id) {
         ticketRepository.deleteById(id);
     }
 
@@ -45,5 +49,9 @@ public class TicketService {
 
     public void deleteExpiredTickets(List<Ticket> expiredTickets) {
         ticketRepository.deleteAll(expiredTickets);
+    }
+
+    public void deleteAllTickets() {
+        ticketRepository.deleteAll();
     }
 }

@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -36,12 +37,13 @@ public class Vendor implements Runnable {
     private int ticketReleaseRate;
 
     @Column(nullable = false)
-    private BigDecimal totalProfit;
+    private BigDecimal totalProfit = BigDecimal.valueOf(0);
 
     @Transient
     private TicketPool ticketPool;
 
-//    @ManyToMany(mappedBy = "vendor")
+
+    @OneToMany(mappedBy = "vendor")
     @Transient
     private LinkedList<Event> eventsList;
 
@@ -73,8 +75,20 @@ public class Vendor implements Runnable {
 
     }
 
-    public Long getVendorId() {
+    public String getVendorId() {
+        return "V-"+String.format("%04d", vendorId);
+    }
+
+    public Long getRealVendorId() {
         return vendorId;
+    }
+
+    public void setRealVendorId(Long vendorId) {
+        this.vendorId = vendorId;
+    }
+
+    public void setVendorId(String vendorId) {
+        this.vendorId = Long.parseLong(vendorId.substring(vendorId.length()-4));;
     }
 
     public String getVendorName() {
@@ -134,6 +148,9 @@ public class Vendor implements Runnable {
     public LinkedList<Event> getEventsList() {
         return eventsList;
     }
+
+
+
 
     @Override
     public String toString() {
@@ -212,5 +229,14 @@ public class Vendor implements Runnable {
                 event.deleteEventTickets(ticketCount);
             }
         }
+    }
+
+    public void createVendorID(List<Vendor> vendorsList) {
+        long lastIndex = 0L;
+
+        if(!vendorsList.isEmpty()){
+            lastIndex = vendorsList.getLast().getRealVendorId();
+        }
+        this.vendorId = lastIndex + 1;
     }
 }

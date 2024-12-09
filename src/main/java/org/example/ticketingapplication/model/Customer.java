@@ -2,11 +2,15 @@ package org.example.ticketingapplication.model;
 
 
 
+
+
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
-import java.util.UUID;
+import java.util.List;
+
+
 
 /**
  -  Initialize customer details
@@ -21,7 +25,6 @@ public class Customer implements Runnable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
 
-
     //CustomerDetails Details for Database
     @Column(nullable = false)
     private String customerName;
@@ -35,7 +38,8 @@ public class Customer implements Runnable {
     @Column(nullable = false)
     private boolean isVIP;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
+    @OneToMany(mappedBy = "customer")
     private LinkedList<Ticket> tickets;
 
     @Transient
@@ -46,6 +50,7 @@ public class Customer implements Runnable {
 
     @Transient
     private int customerRetrievalRate;
+
 
 
 
@@ -65,8 +70,16 @@ public class Customer implements Runnable {
 
 
     //-- Getters and Setters --
-    public Long getCustomerId() {
+    public String getCustomerId() {
+        return "C-"+String.format("%04d", customerId);
+    }
+
+    public long getRealCustomerId(){
         return customerId;
+    }
+
+    public void setRealCustomerId(long customerId){
+        this.customerId = customerId;
     }
 
 
@@ -74,8 +87,8 @@ public class Customer implements Runnable {
         return customerName;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomerId(String customerId) {
+        this.customerId = Long.parseLong(customerId.substring(customerId.length()-4));
     }
 
 
@@ -127,13 +140,21 @@ public class Customer implements Runnable {
         this.customerRetrievalRate = customerRetrievalRate;
     }
 
+    public LocalDateTime getDateTimeAdded() {
+        return dateTimeAdded;
+    }
+
+
+
     @Override
     public String toString() {
-        return "CustomerDetails {" +
-                "customerName='" + customerName + '\'' +
+        return "Customer{" +
+                "customerId='" + customerId + '\'' +
+                ", customerName='" + customerName + '\'' +
                 ", customerEmail='" + customerEmail + '\'' +
+                ", dateTimeAdded=" + dateTimeAdded +
                 ", isVIP=" + isVIP +
-                ", customerId='" + customerId + '\'' +
+                ", totalTickets=" + tickets.size() +
                 '}';
     }
 
@@ -141,5 +162,18 @@ public class Customer implements Runnable {
     public void run() {
 
     }
+
+
+    public void createCustomerID(List<Customer> customersList) {
+        long lastIndex = 0L;
+
+        if(!customersList.isEmpty()){
+            lastIndex = customersList.getLast().getRealCustomerId();
+        }
+
+        this.customerId = lastIndex + 1;
+
+    }
+
 }
 
