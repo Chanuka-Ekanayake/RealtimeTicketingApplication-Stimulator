@@ -20,7 +20,7 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String customerId;
+    private Long customerId;
 
 
     //CustomerDetails Details for Database
@@ -36,7 +36,8 @@ public class Customer {
     @Column(nullable = false)
     private boolean isVIP;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
     private LinkedList<Ticket> tickets;
 
     @Transient
@@ -59,10 +60,14 @@ public class Customer {
         this.dateTimeAdded = LocalDateTime.now();
     }
 
+    public Customer() {
+        this.dateTimeAdded = LocalDateTime.now();
+    }
+
 
 
     //-- Getters and Setters --
-    public String getCustomerId() {
+    public Long getCustomerId() {
         return customerId;
     }
 
@@ -71,7 +76,7 @@ public class Customer {
         return customerName;
     }
 
-    public void setCustomerId(String customerId) {
+    public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
 

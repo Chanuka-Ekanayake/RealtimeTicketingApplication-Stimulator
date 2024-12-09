@@ -41,12 +41,13 @@ public class Event {
     @Column(nullable = false)
     private int ticketAvailable = maxTickets;
 
-    @OneToOne
-    @JoinTable(name = "vendor_id")
-    private String vendorID;
+//    @OneToOne
+//    @JoinColumn(name = "vendor_id")
+    private Long vendorID;
 
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
     private LinkedList<Ticket> tickets = new LinkedList<>();
 
     public Event( String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets) {
@@ -57,7 +58,7 @@ public class Event {
         this.maxTickets = maxTickets;
     }
 
-    public Event(String eventId, String eventName, LocalDateTime eventDateTime,String eventVenue, String eventCategory, int maxTickets, String vendorID) {
+    public Event(String eventId, String eventName, LocalDateTime eventDateTime,String eventVenue, String eventCategory, int maxTickets, Long vendorID) {
         this.eventId = eventId;
         this.eventName = eventName;
         this.eventDateTime = eventDateTime;
@@ -127,11 +128,11 @@ public class Event {
         this.ticketAvailable = ticketAvailable;
     }
 
-    public String getVendorID() {
+    public Long getVendorID() {
         return vendorID;
     }
 
-    public void setVendorID(String vendorID) {
+    public void setVendorID(Long vendorID) {
         this.vendorID = vendorID;
     }
 

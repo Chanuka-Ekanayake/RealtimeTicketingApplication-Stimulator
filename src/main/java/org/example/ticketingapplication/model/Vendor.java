@@ -16,12 +16,12 @@ import java.util.LinkedList;
  */
 
 @Entity
-@Table(name = "Vendors")
+@Table(name = "vendor")
 public class Vendor implements Runnable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String vendorId;
+    private Long vendorId;
 
     @Column(nullable = false)
     private String vendorName;
@@ -41,7 +41,8 @@ public class Vendor implements Runnable {
     @Transient
     private TicketPool ticketPool;
 
-    @ManyToMany(mappedBy = "vendor")
+//    @ManyToMany(mappedBy = "vendor")
+    @Transient
     private LinkedList<Event> eventsList;
 
     @Transient
@@ -49,7 +50,7 @@ public class Vendor implements Runnable {
 
 
 
-    public Vendor(String vendorId,String vendorName, String vendorEmail) {
+    public Vendor(Long vendorId,String vendorName, String vendorEmail) {
         this.vendorId = vendorId;
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
@@ -60,7 +61,7 @@ public class Vendor implements Runnable {
         this.vendorEmail = vendorEmail;
     }
 
-    public Vendor(String vendorId, String vendorName, String vendorEmail, BigDecimal totalProfit, LinkedList<Event> eventsList) {
+    public Vendor(Long vendorId, String vendorName, String vendorEmail, BigDecimal totalProfit, LinkedList<Event> eventsList) {
         this.vendorId = vendorId;
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
@@ -68,7 +69,7 @@ public class Vendor implements Runnable {
         this.eventsList = eventsList;
     }
 
-    public String getVendorId() {
+    public Long getVendorId() {
         return vendorId;
     }
 

@@ -28,8 +28,9 @@ public class Ticket {
     @Column(nullable = false)
     private LocalDateTime expireDateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
+//    @ManyToOne
+//    @JoinColumn(name = "event_id", nullable = false)
+    @Transient
     private String eventID;
 
     public Ticket(String eventID, String ticketId, BigDecimal price, LocalDateTime expireDateTime, LocalTime expireTime) {
