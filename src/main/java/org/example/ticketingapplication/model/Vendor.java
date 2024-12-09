@@ -2,6 +2,8 @@ package org.example.ticketingapplication.model;
 
 
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -13,20 +15,36 @@ import java.util.LinkedList;
 
  */
 
+@Entity
+@Table(name = "Vendors")
 public class Vendor implements Runnable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String vendorId;
+
+    @Column(nullable = false)
     private String vendorName;
+
+    @Column(nullable = false, unique = true)
     private String vendorEmail;
 
+    @Transient
+    private int totalTicketsSelling;
 
-    private int totalTickets;
+    @Transient
     private int ticketReleaseRate;
+
+    @Column(nullable = false)
     private BigDecimal totalProfit;
 
-
+    @Transient
     private TicketPool ticketPool;
+
+    @ManyToMany(mappedBy = "vendor")
     private LinkedList<Event> eventsList;
+
+    @Transient
     private volatile boolean running = true;
 
 
@@ -70,12 +88,12 @@ public class Vendor implements Runnable {
         this.vendorEmail = vendorEmail;
     }
 
-    public int getTotalTickets() {
-        return totalTickets;
+    public int getTotalTicketsSelling() {
+        return totalTicketsSelling;
     }
 
-    public void setTotalTickets(int totalTickets) {
-        this.totalTickets = totalTickets;
+    public void setTotalTicketsSelling(int totalTicketsSelling) {
+        this.totalTicketsSelling = totalTicketsSelling;
     }
 
     public int getTicketReleaseRate() {
@@ -96,7 +114,7 @@ public class Vendor implements Runnable {
 
     public void setTicketingProcess(TicketPool ticketPool, int totalTickets, int ticketReleaseRate) {
         this.ticketPool = ticketPool;
-        this.totalTickets = totalTickets;
+        this.totalTicketsSelling = totalTickets;
         this.ticketReleaseRate = ticketReleaseRate;
     }
 
@@ -124,11 +142,6 @@ public class Vendor implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Vendor - " +vendorName+" started adding Tickets");
-
-        while (running) {
-
-        }
 
     }
 
@@ -155,11 +168,11 @@ public class Vendor implements Runnable {
     //Create tickets for a specific event
     public void createTickets(String eventID, BigDecimal ticketPrice, LocalDateTime ticketExpireDateTime) {
 
-        while (totalTickets > 0) {
+        while (totalTicketsSelling > 0) {
             for (Event event : eventsList) {
                 if (event.getEventId().equals(eventID)) {
                     event.createEventTicket(ticketPrice, ticketExpireDateTime);
-                    totalTickets--;
+                    totalTicketsSelling--;
                 }
             }
         }
@@ -170,12 +183,12 @@ public class Vendor implements Runnable {
 
         int ticketsFilled = 0;
 
-        while (totalTickets > 0) {
+        while (totalTicketsSelling > 0) {
             for (Event event : eventsList) {
-                if (event.getTickets().size() != event.getMaxTickets()) {
+                if (event.getTicketAvailable() < event.getMaxTickets()) {
                     event.createEventTicket(ticketPrice, ticketExpireDateTime);
                     ticketsFilled++;
-                    totalTickets--;
+                    totalTicketsSelling--;
                 }
             }
         }

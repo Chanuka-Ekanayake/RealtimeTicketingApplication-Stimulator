@@ -2,6 +2,8 @@ package org.example.ticketingapplication.model;
 
 
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
@@ -13,11 +15,21 @@ import java.util.LinkedList;
 
  */
 
+@Entity
+@Table(name = "Tickets")
 public class Ticket {
 
+    @Id
     private String ticketId;
+
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(nullable = false)
     private LocalDateTime expireDateTime;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
     private String eventID;
 
     public Ticket(String eventID, String ticketId, BigDecimal price, LocalDateTime expireDateTime, LocalTime expireTime) {

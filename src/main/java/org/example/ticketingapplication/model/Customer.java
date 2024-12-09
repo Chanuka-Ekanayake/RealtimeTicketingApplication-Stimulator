@@ -2,6 +2,8 @@ package org.example.ticketingapplication.model;
 
 
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -11,22 +13,39 @@ import java.util.UUID;
 
  */
 
+@Entity
+@Table(name = "customer")
 public class Customer {
 
 
-    //CustomerDetails Details for the program
-    private final String customerId = UUID.randomUUID().toString();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String customerId;
 
 
     //CustomerDetails Details for Database
+    @Column(nullable = false)
     private String customerName;
+
+    @Column(nullable = false, unique = true)
     private String customerEmail;
+
+    @Column(nullable = false)
     private final LocalDateTime dateTimeAdded;
+
+    @Column(nullable = false)
     private boolean isVIP;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private LinkedList<Ticket> tickets;
+
+    @Transient
     private TicketPool ticketPool;
+
+    @Transient
     private int buyingQuantity;
+
+    @Transient
     private int customerRetrievalRate;
 
 
@@ -51,6 +70,11 @@ public class Customer {
     public String getCustomerName() {
         return customerName;
     }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
@@ -84,6 +108,21 @@ public class Customer {
         this.tickets = tickets;
     }
 
+    public int getBuyingQuantity() {
+        return buyingQuantity;
+    }
+
+    public void setBuyingQuantity(int buyingQuantity) {
+        this.buyingQuantity = buyingQuantity;
+    }
+
+    public int getCustomerRetrievalRate() {
+        return customerRetrievalRate;
+    }
+
+    public void setCustomerRetrievalRate(int customerRetrievalRate) {
+        this.customerRetrievalRate = customerRetrievalRate;
+    }
 
     @Override
     public String toString() {

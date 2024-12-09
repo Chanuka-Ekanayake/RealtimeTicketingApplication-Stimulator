@@ -4,6 +4,8 @@ package org.example.ticketingapplication.model;
 
 
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -14,16 +16,37 @@ import java.util.LinkedList;
 
  */
 
-
+@Entity
+@Table(name = "event")
 public class Event {
+
+    @Id
     private String eventId;
+
+    @Column(nullable = false)
     private String eventName;
+
+    @Column(nullable = false)
     private LocalDateTime eventDateTime;
+
+    @Column(nullable = false)
     private String eventVenue;
+
+    @Column(nullable = false)
     private String eventCategory;
+
+    @Column(nullable = false)
     private int maxTickets;
+
+    @Column(nullable = false)
     private int ticketAvailable = maxTickets;
+
+    @OneToOne
+    @JoinTable(name = "vendor_id")
     private String vendorID;
+
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private LinkedList<Ticket> tickets = new LinkedList<>();
 
     public Event( String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets) {
@@ -173,6 +196,7 @@ public class Event {
                 Ticket newTicket = new Ticket(eventId, price, dateTime);
                 newTicket.createTicketID(tickets);
                 tickets.add(newTicket);
+                ticketAvailable++;
             }
         } else if (ticketAvailable == maxTickets) {
             System.out.println("For "+eventName+"Maximum ticketCount is reached!\nPlease Update the Maximum Ticket Count.");
@@ -189,6 +213,17 @@ public class Event {
         for (int i = 0; i < deleteTicketCount; i++) {
             System.out.println(tickets.get(i).getTicketId() + "Removed");
             tickets.removeFirst();
+            ticketAvailable--;
+        }
+    }
+
+
+    //Remove a specific ticket
+    public void removeTicket(Ticket ticket){
+        for(Ticket t : tickets){
+            if(t.getTicketId().equals(ticket.getTicketId())){
+                tickets.remove(ticket);
+            }
         }
     }
 
