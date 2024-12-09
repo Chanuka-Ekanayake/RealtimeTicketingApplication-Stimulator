@@ -15,8 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "customer")
-public class Customer {
-
+public class Customer implements Runnable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +35,7 @@ public class Customer {
     @Column(nullable = false)
     private boolean isVIP;
 
-//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Transient
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private LinkedList<Ticket> tickets;
 
     @Transient
@@ -139,5 +137,9 @@ public class Customer {
                 '}';
     }
 
+    @Override
+    public void run() {
+
+    }
 }
 

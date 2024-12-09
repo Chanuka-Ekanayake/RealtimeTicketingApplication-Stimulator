@@ -33,6 +33,10 @@ public class Ticket {
     @Transient
     private String eventID;
 
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
     public Ticket(String eventID, String ticketId, BigDecimal price, LocalDateTime expireDateTime, LocalTime expireTime) {
         this.ticketId = ticketId;
         this.price = price;
@@ -44,6 +48,10 @@ public class Ticket {
         this.price = price;
         this.expireDateTime = expireDateTime;
         this.eventID = eventID;
+    }
+
+    public Ticket() {
+
     }
 
     public void setTicketId(String ticketId) {
@@ -76,6 +84,14 @@ public class Ticket {
 
     public void setEventID(String eventID) {
         this.eventID = eventID;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     @Override

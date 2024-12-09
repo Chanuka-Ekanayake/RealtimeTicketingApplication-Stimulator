@@ -69,6 +69,10 @@ public class Vendor implements Runnable {
         this.eventsList = eventsList;
     }
 
+    public Vendor() {
+
+    }
+
     public Long getVendorId() {
         return vendorId;
     }
@@ -150,8 +154,8 @@ public class Vendor implements Runnable {
 
 
     //Create an event for the vendor
-    public Event createEvent(String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets, BigDecimal ticketPrice, LocalDateTime ticketExpireDateTime) {
-        Event event = new Event(eventName, eventName,eventDateTime,eventVenue,eventCategory,maxTickets,vendorId);
+    public Event createEvent(String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets, Vendor vendor) {
+        Event event = new Event(eventName, eventName,eventDateTime,eventVenue,eventCategory,maxTickets,vendor);
 
         event.createEventID(eventsList);
         eventsList.add(event);

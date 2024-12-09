@@ -41,9 +41,10 @@ public class Event {
     @Column(nullable = false)
     private int ticketAvailable = maxTickets;
 
-//    @OneToOne
-//    @JoinColumn(name = "vendor_id")
-    private Long vendorID;
+    @OneToOne
+    @JoinColumn(name = "vendor_id", referencedColumnName = "vendorId")
+    private Vendor vendor;
+
 
 
 //    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,14 +59,18 @@ public class Event {
         this.maxTickets = maxTickets;
     }
 
-    public Event(String eventId, String eventName, LocalDateTime eventDateTime,String eventVenue, String eventCategory, int maxTickets, Long vendorID) {
+    public Event(String eventId, String eventName, LocalDateTime eventDateTime,String eventVenue, String eventCategory, int maxTickets, Vendor vendor) {
         this.eventId = eventId;
         this.eventName = eventName;
         this.eventDateTime = eventDateTime;
         this.eventVenue = eventVenue;
         this.eventCategory = eventCategory;
         this.maxTickets = maxTickets;
-        this.vendorID = vendorID;
+        this.vendor = vendor;
+    }
+
+    public Event() {
+
     }
 
     public String getEventId() {
@@ -129,11 +134,11 @@ public class Event {
     }
 
     public Long getVendorID() {
-        return vendorID;
+        return vendor.getVendorId();
     }
 
-    public void setVendorID(Long vendorID) {
-        this.vendorID = vendorID;
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
     }
 
     public LinkedList<Ticket> getTickets() {
@@ -164,8 +169,8 @@ public class Event {
         String GeneratedEventID;
 
         if(eventsList.isEmpty()){
-            if(vendorID != null) {
-                GeneratedEventID = vendorID + "-E-0001";
+            if(vendor.getVendorId() != null) {
+                GeneratedEventID = vendor.getVendorId() + "-E-0001";
 
             } else {
                 GeneratedEventID = "0000-E-0001";
@@ -185,7 +190,7 @@ public class Event {
                 System.out.println("Invalid Event ID");
             }
 
-            GeneratedEventID = vendorID + "-E-" + ++lastIndex;
+            GeneratedEventID = vendor.getVendorId() + "-E-" + ++lastIndex;
             setEventId(GeneratedEventID);
         }
 
