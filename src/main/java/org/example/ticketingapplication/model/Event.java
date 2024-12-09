@@ -1,45 +1,55 @@
 package org.example.ticketingapplication.model;
 
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+
+
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+
 
 /**
  -  Represents an event.
 
  */
 
+
 public class Event {
-    private final String eventId;
+    private String eventId;
     private String eventName;
-    private LocalDate eventDate;
-    private LocalTime eventTime;
+    private LocalDateTime eventDateTime;
     private String eventVenue;
     private String eventCategory;
     private int maxTickets;
     private int ticketAvailable = maxTickets;
+    private String vendorID;
+    private LinkedList<Ticket> tickets = new LinkedList<>();
 
-    public Event(String eventId, String eventName, LocalDate eventDate, LocalTime eventTime, String eventVenue, String eventCategory, int maxTickets) {
-        this.eventId = eventId;
+    public Event( String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets) {
         this.eventName = eventName;
-        this.eventDate = eventDate;
-        this.eventTime = eventTime;
+        this.eventDateTime = eventDateTime;
         this.eventVenue = eventVenue;
         this.eventCategory = eventCategory;
         this.maxTickets = maxTickets;
     }
 
-    public Event(String eventId, String eventName, LocalDate eventDate, LocalTime eventTime, String eventVenue, String eventCategory) {
+    public Event(String eventId, String eventName, LocalDateTime eventDateTime,String eventVenue, String eventCategory, int maxTickets, String vendorID) {
         this.eventId = eventId;
         this.eventName = eventName;
-        this.eventDate = eventDate;
-        this.eventTime = eventTime;
+        this.eventDateTime = eventDateTime;
         this.eventVenue = eventVenue;
         this.eventCategory = eventCategory;
+        this.maxTickets = maxTickets;
+        this.vendorID = vendorID;
     }
 
     public String getEventId() {
         return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 
     public String getEventName() {
@@ -50,23 +60,16 @@ public class Event {
         this.eventName = eventName;
     }
 
-    public LocalDate getEventDate() {
-        return eventDate;
+    public LocalDateTime getEventDateTime() {
+        return eventDateTime;
     }
 
-    public void setEventDate(LocalDate eventDate) {
-        this.eventDate = eventDate;
+    public void setEventDateTime(LocalDateTime eventDate) {
+        this.eventDateTime = eventDate;
         System.out.println("Event Data Has been Updated");
     }
 
-    public LocalTime getEventTime() {
-        return eventTime;
-    }
 
-    public void setEventTime(LocalTime eventTime) {
-        this.eventTime = eventTime;
-        System.out.println("Event Time has been Updated");
-    }
 
     public String getEventVenue() {
         return eventVenue;
@@ -101,18 +104,93 @@ public class Event {
         this.ticketAvailable = ticketAvailable;
     }
 
+    public String getVendorID() {
+        return vendorID;
+    }
+
+    public void setVendorID(String vendorID) {
+        this.vendorID = vendorID;
+    }
+
+    public LinkedList<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(LinkedList<Ticket> tickets) {
+        this.tickets = tickets;
+    }
 
     @Override
     public String toString() {
         return "Event{" +
                 "eventId='" + eventId + '\'' +
                 ", eventName='" + eventName + '\'' +
-                ", eventDate=" + eventDate +
-                ", eventTime=" + eventTime +
+                ", eventDate=" + eventDateTime +
                 ", eventVenue='" + eventVenue + '\'' +
                 ", eventDescription='" + eventCategory + '\'' +
                 ", maxTickets=" + maxTickets +
                 ", ticketAvailable=" + ticketAvailable +
                 '}';
     }
+
+
+    public void createEventID(LinkedList<Event> eventsList){
+
+        int lastIndex = 0;
+        String GeneratedEventID;
+
+        if(eventsList.isEmpty()){
+            if(vendorID != null) {
+                GeneratedEventID = vendorID + "-E-0001";
+
+            } else {
+                GeneratedEventID = "0000-E-0001";
+            }
+
+            setEventId(GeneratedEventID);
+
+        } else {
+
+            String lastDigits = eventsList.getLast().getEventId().substring(eventsList.getLast().getEventId().length() - 4); //Extracts the last 5 digits from the EventID
+
+            //Convert the string to integer
+            try{
+                lastIndex = Integer.parseInt(lastDigits);
+            }
+            catch (NumberFormatException nfe){
+                System.out.println("Invalid Event ID");
+            }
+
+            GeneratedEventID = vendorID + "-E-" + ++lastIndex;
+            setEventId(GeneratedEventID);
+        }
+
+    }
+
+    public void createEventTicket( BigDecimal price, LocalDateTime dateTime){
+        if(tickets.isEmpty()){
+            for (int i = 0; i < maxTickets; i++) {
+                Ticket newTicket = new Ticket(eventId, price, dateTime);
+                newTicket.createTicketID(tickets);
+                tickets.add(newTicket);
+            }
+        } else if (ticketAvailable == maxTickets) {
+            System.out.println("For "+eventName+"Maximum ticketCount is reached!\nPlease Update the Maximum Ticket Count.");
+
+        } else {
+            for (int i = 0; i < (maxTickets-ticketAvailable); i++) {
+                Ticket newTicket = new Ticket(eventId, price, dateTime);
+                newTicket.createTicketID(tickets);
+            }
+        }
+    }
+
+    public void deleteEventTickets(int deleteTicketCount){
+        for (int i = 0; i < deleteTicketCount; i++) {
+            System.out.println(tickets.get(i).getTicketId() + "Removed");
+            tickets.removeFirst();
+        }
+    }
+
+
 }

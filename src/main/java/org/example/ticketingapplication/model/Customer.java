@@ -2,44 +2,42 @@ package org.example.ticketingapplication.model;
 
 
 
-import org.example.ticketingapplication.controller.TicketPool;
-
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+import java.util.UUID;
 
 /**
  -  Initialize customer details
 
  */
 
-public class Customer implements Runnable {
+public class Customer {
 
 
-    //Customer Details for the program
-    private final String customerId;
+    //CustomerDetails Details for the program
+    private final String customerId = UUID.randomUUID().toString();
 
 
-    //Customer Details for Database
+    //CustomerDetails Details for Database
     private String customerName;
     private String customerEmail;
-    private final LocalDateTime dateAdded;
+    private final LocalDateTime dateTimeAdded;
     private boolean isVIP;
 
-
-    private  TicketPool ticketPool;
     private LinkedList<Ticket> tickets;
+    private TicketPool ticketPool;
     private int buyingQuantity;
     private int customerRetrievalRate;
 
 
 
 
-    public Customer(String customerId, String customerName, String customerEmail, String dateAdded, boolean isVIP) {
-        this.customerId = customerId;
+
+    public Customer(String customerName, String customerEmail,boolean isVIP) {
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.isVIP = isVIP;
-        this.dateAdded = LocalDateTime.now();
+        this.dateTimeAdded = LocalDateTime.now();
     }
 
 
@@ -49,21 +47,6 @@ public class Customer implements Runnable {
         return customerId;
     }
 
-    public int getBuyingQuantity() {
-        return buyingQuantity;
-    }
-
-    public void setBuyingQuantity(int buyingQuantity) {
-        this.buyingQuantity = buyingQuantity;
-    }
-
-    public int getCustomerRetrievalRate() {
-        return customerRetrievalRate;
-    }
-
-    public void setCustomerRetrievalRate(int customerRetrievalRate) {
-        this.customerRetrievalRate = customerRetrievalRate;
-    }
 
     public String getCustomerName() {
         return customerName;
@@ -82,7 +65,7 @@ public class Customer implements Runnable {
     }
 
     public String getDateAdded() {
-        return dateAdded.toString();
+        return dateTimeAdded.toString();
     }
 
     public boolean isVIP() {
@@ -101,20 +84,10 @@ public class Customer implements Runnable {
         this.tickets = tickets;
     }
 
-    public void setTicketingProcess(int buyingQuantity, int customerRetrievalRate, TicketPool ticketPool) {
-        this.buyingQuantity = buyingQuantity;
-        this.customerRetrievalRate = customerRetrievalRate;
-        this.ticketPool = ticketPool;
-    }
-
-
-    public void setTicketPool(TicketPool ticketPool) {
-        this.ticketPool = ticketPool;
-    }
 
     @Override
     public String toString() {
-        return "Customer {" +
+        return "CustomerDetails {" +
                 "customerName='" + customerName + '\'' +
                 ", customerEmail='" + customerEmail + '\'' +
                 ", isVIP=" + isVIP +
@@ -122,10 +95,5 @@ public class Customer implements Runnable {
                 '}';
     }
 
-
-    @Override
-    public void run() {
-
-    }
 }
 

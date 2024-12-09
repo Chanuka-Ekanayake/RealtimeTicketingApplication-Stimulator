@@ -1,12 +1,15 @@
 package org.example.ticketingapplication.model;
 
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 
 public class TicketPool {
     private final Queue<Ticket> tickets = new LinkedList<>();
@@ -74,6 +77,10 @@ public class TicketPool {
         }finally {
             lock.unlock();
         }
+    }
+
+    public int getTicketCount() {
+       return tickets.size();
     }
 
 

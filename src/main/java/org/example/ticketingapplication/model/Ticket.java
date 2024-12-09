@@ -6,25 +6,35 @@ import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedList;
 
 /**
  -  Represents tickets for events.
 
  */
 
-public class Ticket extends Event {
+public class Ticket {
 
-    private final String ticketId;
+    private String ticketId;
     private BigDecimal price;
     private LocalDateTime expireDateTime;
-    private Event event;
+    private String eventID;
 
-    public Ticket(Event event, String ticketId, BigDecimal price, LocalDateTime expireDateTime, LocalTime expireTime) {
-        super(event.getEventId(), event.getEventName(), event.getEventDate(), event.getEventTime(),event.getEventCategory() ,event.getEventVenue());
+    public Ticket(String eventID, String ticketId, BigDecimal price, LocalDateTime expireDateTime, LocalTime expireTime) {
         this.ticketId = ticketId;
         this.price = price;
         this.expireDateTime = expireDateTime;
-        this.event = event;
+        this.eventID = eventID;
+    }
+
+    public Ticket(String eventID, BigDecimal price, LocalDateTime expireDateTime) {
+        this.price = price;
+        this.expireDateTime = expireDateTime;
+        this.eventID = eventID;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 
     public String getTicketId() {
@@ -47,13 +57,51 @@ public class Ticket extends Event {
         this.expireDateTime = expireDateTime;
     }
 
-
-
-    public Event getEvent() {
-        return event;
+    public String getEventID() {
+        return eventID;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "ticketId='" + ticketId + '\'' +
+                ", price=" + price +
+                ", expireDateTime=" + expireDateTime +
+                ", event=" + eventID +
+                '}';
+    }
+
+
+    //Create Unique TicketID's
+    public void createTicketID(LinkedList<Ticket> ticketsList) {
+        int lastIndex = 0;
+        String GeneratedTicketID;
+
+        if(ticketsList.isEmpty()){
+            if(eventID != null) {
+                GeneratedTicketID = eventID + "-T-0001";
+            } else {
+                GeneratedTicketID = "0000-T-0001";
+            }
+
+        } else {
+            String lastDigits = ticketsList.getLast().getTicketId().substring(ticketsList.getLast().getTicketId().length() - 4); //Extracts the last 5 digits from the EventID
+
+            //Convert the string to integer
+            try{
+                lastIndex = Integer.parseInt(lastDigits);
+            }
+            catch (NumberFormatException nfe){
+                System.out.println("Invalid Event ID");
+            }
+            GeneratedTicketID = eventID + "-T-" + ++lastIndex;
+        }
+
+
+
     }
 }

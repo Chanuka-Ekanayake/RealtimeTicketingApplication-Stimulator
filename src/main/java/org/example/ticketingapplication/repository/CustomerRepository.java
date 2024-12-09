@@ -1,7 +1,7 @@
 package org.example.ticketingapplication.repository;
 
 /**
- - Interface for Customer entity
+ - Interface for CustomerDetails entity
 
  */
 

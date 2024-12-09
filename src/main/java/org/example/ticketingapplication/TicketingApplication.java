@@ -1,6 +1,5 @@
 package org.example.ticketingapplication;
 
-import org.example.ticketingapplication.model.Customer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
