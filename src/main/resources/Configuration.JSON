@@ -1,0 +1,6 @@
+{
+  "totalTickets": 200,
+  "ticketReleaseRate": 5,
+  "customerRetrievalRate": 3,
+  "maxTicketPoolCapacity": 500
+}

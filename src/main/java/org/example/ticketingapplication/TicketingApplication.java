@@ -35,6 +35,8 @@ public class TicketingApplication {
     private TicketService ticketService;
 
 
+
+
     public static void main(String[] args) {
         SpringApplication.run(TicketingApplication.class, args);
 
@@ -44,26 +46,6 @@ public class TicketingApplication {
 
     @PostConstruct
     public void testDatabase(){
-
-        ticketService.deleteAllTickets();
-        customerService.deleteAllCustomers();
-        eventService.deleteAllEvents();
-        vendorService.deleteAllVendors();
-
-
-        Customer customer = new Customer("Chanuka", "chanukasamajith@gmail.com",true);
-        customerService.addCustomer(customer);
-
-        Vendor vendor = new Vendor("Vihanga","vihanga.isu@gmail.com");
-        vendorService.addVendor(vendor);
-
-        Event event = new Event("CodeSprint", LocalDateTime.now(),"IIT","StartupBattle",1000,vendor);
-        event.createEventID(eventService.getAllEvents());
-        eventService.addEvent(event);
-
-        Ticket ticket = new Ticket(event, BigDecimal.valueOf(5000),LocalDateTime.now());
-        ticket.createTicketID(ticketService.getAllTickets());
-        ticketService.addTicket(ticket);
 
     }
 }
