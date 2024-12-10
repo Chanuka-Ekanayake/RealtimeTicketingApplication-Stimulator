@@ -1,6 +1,7 @@
 package org.example.ticketingapplication.service;
 
 import org.example.ticketingapplication.model.Customer;
+import org.example.ticketingapplication.model.Ticket;
 import org.example.ticketingapplication.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public Customer findCustomerById(Long id) {
+    public Customer findCustomerById(String id) {
         return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer with id " + id + " not found"));
     }
 
@@ -38,12 +39,26 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(String id) {
         customerRepository.deleteById(id);
+        for(Ticket ticket : findCustomerById(id).getTickets()) {
+            ticket.setCustomer(null);
+        }
     }
 
     public void deleteAllCustomers() {
         customerRepository.deleteAll();
+        for(Customer customer : customerRepository.findAll() ) {
+            for(Ticket ticket : customer.getTickets()) {
+                ticket.setCustomer(null);
+            }
+        }
+    }
+
+    public Customer createCustomer(String CustomerName, String Email, Boolean isVIP) {
+        Customer customer = new Customer(CustomerName, Email, isVIP);
+        customer.createCustomerID(customerRepository.findAll());
+        return customerRepository.save(customer);
     }
 
 }

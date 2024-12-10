@@ -3,6 +3,8 @@ package org.example.ticketingapplication.model;
 
 
 import jakarta.persistence.*;
+import org.example.ticketingapplication.service.EventService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,8 +23,7 @@ import java.util.List;
 public class Vendor implements Runnable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long vendorId;
+    private String vendorId;
 
     @Column(nullable = false)
     private String vendorName;
@@ -31,7 +32,7 @@ public class Vendor implements Runnable {
     private String vendorEmail;
 
     @Transient
-    private int totalTicketsSelling;
+    private int totalTicketsToBeSold = 0;
 
     @Transient
     private int ticketReleaseRate;
@@ -42,17 +43,15 @@ public class Vendor implements Runnable {
     @Transient
     private TicketPool ticketPool;
 
-
     @OneToMany(mappedBy = "vendor")
     @Transient
-    private LinkedList<Event> eventsList;
+    private LinkedList<Event> eventsList = new LinkedList<>();
 
     @Transient
     private volatile boolean running = true;
 
 
-
-    public Vendor(Long vendorId,String vendorName, String vendorEmail) {
+    public Vendor(String vendorId,String vendorName, String vendorEmail) {
         this.vendorId = vendorId;
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
@@ -63,7 +62,7 @@ public class Vendor implements Runnable {
         this.vendorEmail = vendorEmail;
     }
 
-    public Vendor(Long vendorId, String vendorName, String vendorEmail, BigDecimal totalProfit, LinkedList<Event> eventsList) {
+    public Vendor(String vendorId, String vendorName, String vendorEmail, BigDecimal totalProfit, LinkedList<Event> eventsList) {
         this.vendorId = vendorId;
         this.vendorName = vendorName;
         this.vendorEmail = vendorEmail;
@@ -72,23 +71,17 @@ public class Vendor implements Runnable {
     }
 
     public Vendor() {
-
     }
+
+
 
     public String getVendorId() {
-        return "V-"+String.format("%04d", vendorId);
-    }
-
-    public Long getRealVendorId() {
         return vendorId;
     }
 
-    public void setRealVendorId(Long vendorId) {
-        this.vendorId = vendorId;
-    }
 
     public void setVendorId(String vendorId) {
-        this.vendorId = Long.parseLong(vendorId.substring(vendorId.length()-4));;
+        this.vendorId = vendorId;
     }
 
     public String getVendorName() {
@@ -107,12 +100,12 @@ public class Vendor implements Runnable {
         this.vendorEmail = vendorEmail;
     }
 
-    public int getTotalTicketsSelling() {
-        return totalTicketsSelling;
+    public int getTotalTicketsToBeSold() {
+        return totalTicketsToBeSold;
     }
 
-    public void setTotalTicketsSelling(int totalTicketsSelling) {
-        this.totalTicketsSelling = totalTicketsSelling;
+    public void setTotalTicketsToBeSold(int totalTicketsToBeSold) {
+        this.totalTicketsToBeSold = totalTicketsToBeSold;
     }
 
     public int getTicketReleaseRate() {
@@ -131,9 +124,9 @@ public class Vendor implements Runnable {
         this.totalProfit = totalProfit.setScale(2, RoundingMode.HALF_UP); //Rounds up the amount of money for 2 decimal places
     }
 
-    public void setTicketingProcess(TicketPool ticketPool, int totalTickets, int ticketReleaseRate) {
+    public void setTicketingProcess(TicketPool ticketPool, int totalTicketsToBeSold, int ticketReleaseRate) {
         this.ticketPool = ticketPool;
-        this.totalTicketsSelling = totalTickets;
+        this.totalTicketsToBeSold = totalTicketsToBeSold;
         this.ticketReleaseRate = ticketReleaseRate;
     }
 
@@ -142,14 +135,39 @@ public class Vendor implements Runnable {
     }
 
     public void setEventList(LinkedList<Event> events) {
+
+        for(Event event : events) {
+            boolean isAdded = false;
+            for(Event Preevent : eventsList){
+                if (Preevent.getEventId().equals(event.getEventId())) {
+                    isAdded = true;
+                    break;
+                }
+            }
+            if(!isAdded){
+                eventsList.add(event);
+            }
+        }
         this.eventsList = events;
     }
 
-    public LinkedList<Event> getEventsList() {
+
+    public List<Event> getEventsList() {
         return eventsList;
     }
 
+    public void setEventsList(LinkedList<Event> eventsList) {
+        this.eventsList = eventsList;
+    }
 
+    public void addEvent(Event event){
+        eventsList.add(event);
+    }
+
+    public void removeEvent(Event event){
+        eventsList.remove(event);
+        event.setVendor(null);
+    }
 
 
     @Override
@@ -158,6 +176,8 @@ public class Vendor implements Runnable {
                 "vendorId='" + vendorId + '\'' +
                 ", vendorName='" + vendorName + '\'' +
                 ", vendorEmail='" + vendorEmail + '\'' +
+                ", totalProfit=" + totalProfit + "\"" +
+                ", totalEventsRegistered=" + eventsList.size() +
                 '}';
     }
 
@@ -170,14 +190,7 @@ public class Vendor implements Runnable {
 
 
 
-    //Create an event for the vendor
-    public Event createEvent(String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets, Vendor vendor) {
-        Event event = new Event(eventName, eventName,eventDateTime,eventVenue,eventCategory,maxTickets,vendor);
 
-        event.createEventID(eventsList);
-        eventsList.add(event);
-        return event;
-    }
 
     //Print Events on the list
     public void printEvents() {
@@ -188,13 +201,13 @@ public class Vendor implements Runnable {
     }
 
     //Create tickets for a specific event
-    public void createTickets(String eventID, BigDecimal ticketPrice, LocalDateTime ticketExpireDateTime) {
+    public void createTickets(Event event, BigDecimal ticketPrice, LocalDateTime ticketExpireDateTime) {
 
-        while (totalTicketsSelling > 0) {
-            for (Event event : eventsList) {
-                if (event.getEventId().equals(eventID)) {
-                    event.createEventTicket(ticketPrice, ticketExpireDateTime);
-                    totalTicketsSelling--;
+        while (totalTicketsToBeSold > 0) {
+            for(Event VendorEvents:eventsList){
+                if(VendorEvents.getEventId().equals(event.getEventId())){
+                    VendorEvents.addTicket(new Ticket(event, ticketPrice, ticketExpireDateTime));
+                    totalTicketsToBeSold--;
                 }
             }
         }
@@ -202,15 +215,13 @@ public class Vendor implements Runnable {
 
     //Create tickets automatically for required Events
     public void createTicketsAutomatically(BigDecimal ticketPrice, LocalDateTime ticketExpireDateTime) {
-
         int ticketsFilled = 0;
-
-        while (totalTicketsSelling > 0) {
+        while (totalTicketsToBeSold > 0) {
             for (Event event : eventsList) {
                 if (event.getTicketAvailable() < event.getMaxTickets()) {
-                    event.createEventTicket(ticketPrice, ticketExpireDateTime);
+                    event.createEventTicket(event, ticketPrice, ticketExpireDateTime);
                     ticketsFilled++;
-                    totalTicketsSelling--;
+                    totalTicketsToBeSold--;
                 }
             }
         }
@@ -231,12 +242,25 @@ public class Vendor implements Runnable {
         }
     }
 
+    //Create Unique VendorID's
     public void createVendorID(List<Vendor> vendorsList) {
-        long lastIndex = 0L;
+        int lastIndex = 0;
+        String GeneratedVendorID;
 
-        if(!vendorsList.isEmpty()){
-            lastIndex = vendorsList.getLast().getRealVendorId();
+        if(vendorsList.isEmpty()){
+            GeneratedVendorID = "V-0001";
+        } else {
+            String lastDigits = vendorsList.getLast().getVendorId().substring(vendorsList.getLast().getVendorId().length() - 4); //Extracts the last 5 digits from the VendorID
+
+            //Convert the string to integer
+            try{
+                lastIndex = Integer.parseInt(lastDigits);
+            }
+            catch (NumberFormatException nfe){
+                System.out.println("Invalid Vendor ID");
+            }
+            GeneratedVendorID = "V-" + ++lastIndex;
         }
-        this.vendorId = lastIndex + 1;
+        this.vendorId = GeneratedVendorID;
     }
 }

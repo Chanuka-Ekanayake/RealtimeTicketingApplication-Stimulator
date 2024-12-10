@@ -3,25 +3,59 @@ package org.example.ticketingapplication.model;
 
 
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
+@Component
 public class TicketPool {
-    private final Queue<Ticket> tickets = new LinkedList<>();
-    private final int maxCapacity;
+    private final ConcurrentLinkedQueue<Ticket> tickets = new ConcurrentLinkedQueue<>();
+    private int maxCapacity;
 
     private final Lock lock = new ReentrantLock();
     private final Condition notEmpty = lock.newCondition();
     private final Condition notFull = lock.newCondition();
 
-    public TicketPool (int maxCapacity, int totalTickets) {
+    private int totalTicketsSelling;
+
+    public TicketPool (int maxCapacity, int totalTicketsSelling) {
+        this.maxCapacity = maxCapacity;
+        this.totalTicketsSelling = totalTicketsSelling;
+    }
+
+    public TicketPool(){
+
+    }
+
+
+    public int getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
+
+    public ConcurrentLinkedQueue<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public int getTotalTicketsSelling() {
+        return totalTicketsSelling;
+    }
+
+    public void setTotalTicketsSelling(int totalTicketsSelling) {
+        this.totalTicketsSelling = totalTicketsSelling;
+    }
+
+
 
     //Adding Tickets to the pool
     public void addTicket(Ticket ticket, String vendorName) throws InterruptedException {
@@ -32,7 +66,7 @@ public class TicketPool {
                 notFull.await(); //Holds the thread until customers buy few tickets
             }
 
-            tickets.add(ticket);
+            tickets.offer(ticket);
             System.out.println(ticket.getTicketId() + " added to the pool by " + vendorName);
             notEmpty.signalAll(); //Notify threads which are waiting to buy tickets
 

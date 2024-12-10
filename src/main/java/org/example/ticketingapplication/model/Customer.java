@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-
 /**
  -  Initialize customer details
 
@@ -22,8 +21,7 @@ import java.util.List;
 public class Customer implements Runnable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long customerId;
+    private String customerId;
 
     //CustomerDetails Details for Database
     @Column(nullable = false)
@@ -40,7 +38,7 @@ public class Customer implements Runnable {
 
     @Transient
     @OneToMany(mappedBy = "customer")
-    private LinkedList<Ticket> tickets;
+    private LinkedList<Ticket> tickets = new LinkedList<>();
 
     @Transient
     private TicketPool ticketPool;
@@ -50,9 +48,6 @@ public class Customer implements Runnable {
 
     @Transient
     private int customerRetrievalRate;
-
-
-
 
 
 
@@ -67,28 +62,26 @@ public class Customer implements Runnable {
         this.dateTimeAdded = LocalDateTime.now();
     }
 
-
+    public Customer(String customerId, String customerName, String customerEmail, boolean isVIP, LinkedList<Ticket> tickets) {
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.customerEmail = customerEmail;
+        this.dateTimeAdded = LocalDateTime.now();
+        this.isVIP = isVIP;
+        this.tickets = tickets;
+    }
 
     //-- Getters and Setters --
     public String getCustomerId() {
-        return "C-"+String.format("%04d", customerId);
-    }
-
-    public long getRealCustomerId(){
         return customerId;
     }
 
-    public void setRealCustomerId(long customerId){
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
-
     public String getCustomerName() {
         return customerName;
-    }
-
-    public void setCustomerId(String customerId) {
-        this.customerId = Long.parseLong(customerId.substring(customerId.length()-4));
     }
 
 
@@ -144,6 +137,16 @@ public class Customer implements Runnable {
         return dateTimeAdded;
     }
 
+    public void addTicket(Ticket ticket) {
+        tickets.add(ticket);
+        ticket.setCustomer(this);
+    }
+
+    public void removeTicket(Ticket ticket) {
+        tickets.remove(ticket);
+        ticket.setCustomer(null);
+    }
+
 
 
     @Override
@@ -160,20 +163,27 @@ public class Customer implements Runnable {
 
     @Override
     public void run() {
-
     }
 
+    public void createCustomerID(List<Customer> vendorsList) {
+        int lastIndex = 0;
+        String GeneratedVendorID;
 
-    public void createCustomerID(List<Customer> customersList) {
-        long lastIndex = 0L;
+        if(vendorsList.isEmpty()){
+            GeneratedVendorID = "C-0001";
+        } else {
+            String lastDigits = vendorsList.getLast().getCustomerId().substring(vendorsList.getLast().getCustomerId().length() - 4); //Extracts the last 5 digits from the CustomerID
 
-        if(!customersList.isEmpty()){
-            lastIndex = customersList.getLast().getRealCustomerId();
+            //Convert the string to integer
+            try{
+                lastIndex = Integer.parseInt(lastDigits);
+            }
+            catch (NumberFormatException nfe){
+                System.out.println("Invalid Customer ID");
+            }
+            GeneratedVendorID = "C-" + ++lastIndex;
         }
-
-        this.customerId = lastIndex + 1;
-
+        this.customerId = GeneratedVendorID;
     }
-
 }
 

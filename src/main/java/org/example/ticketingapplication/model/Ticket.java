@@ -8,8 +8,6 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,10 +32,6 @@ public class Ticket {
     @JoinColumn(name = "event_id")
     private Event event;
 
-
-    @Transient
-    private String eventID;
-
     @ManyToOne
     @JoinColumn(name = "customer_id",nullable = true)
     private Customer customer;
@@ -55,15 +49,19 @@ public class Ticket {
         this.event = event;
     }
 
-    public Ticket(String eventID, BigDecimal price, LocalDateTime expireDateTime) {
-        this.eventID = eventID;
-        this.price = price;
-        this.expireDateTime = expireDateTime;
-    }
 
     public Ticket() {
-
     }
+
+    public Ticket(String ticketId, BigDecimal price, LocalDateTime expireDateTime, Event event, Customer customer) {
+        this.ticketId = ticketId;
+        this.price = price;
+        this.expireDateTime = expireDateTime;
+        this.event = event;
+        this.customer = customer;
+    }
+
+
 
     public void setTicketId(String ticketId) {
         this.ticketId = ticketId;
@@ -89,14 +87,6 @@ public class Ticket {
         this.expireDateTime = expireDateTime;
     }
 
-    public String getEventID() {
-        return eventID;
-    }
-
-    public void setEventID(String eventID) {
-        this.eventID = eventID;
-    }
-
     public Customer getCustomer() {
         return customer;
     }
@@ -119,7 +109,7 @@ public class Ticket {
                 "ticketId='" + ticketId + '\'' +
                 ", price=" + price +
                 ", expireDateTime=" + expireDateTime +
-                ", event=" + eventID +
+                ", event=" + event.getEventName() +
                 '}';
     }
 
@@ -135,7 +125,6 @@ public class Ticket {
             } else {
                 GeneratedTicketID = "0000-T-0001";
             }
-
             this.ticketId = GeneratedTicketID;
 
         } else {
@@ -151,8 +140,5 @@ public class Ticket {
             GeneratedTicketID = event.getEventId() + "-T-" + ++lastIndex;
             this.ticketId = GeneratedTicketID;
         }
-
-
-
     }
 }
