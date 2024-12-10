@@ -49,6 +49,11 @@ public class Customer implements Runnable {
     @Transient
     private int customerRetrievalRate;
 
+    @Transient
+    private volatile Boolean running = true;
+
+
+
 
 
     public Customer(String customerName, String customerEmail,boolean isVIP) {
@@ -163,7 +168,38 @@ public class Customer implements Runnable {
 
     @Override
     public void run() {
+        if(ticketPool == null || buyingQuantity == 0 || customerRetrievalRate == 0) {
+            System.out.println("Please initialise the TicketPool, Buying Quantity and customerRetrievalRate to buy tickets from the TicketPool");
+            stopCustomer();
+        }
+        this.running = true;
+        while(running && buyingQuantity > 0) {
+            System.out.println("Customer "+customerName+" started buying tickets");
+
+            for (int i = 0; i < buyingQuantity; i++) {
+                try {
+                    ticketPool.buyTicket(this);
+                    buyingQuantity--;
+
+                    if(buyingQuantity % customerRetrievalRate == 0){
+                        Thread.sleep(customerRetrievalRate*1000L); //Customer Sleep less than vendors to make the demand on tickets.(Ensure the ticketPool will not be filled)
+                    }
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.out.println("Customer "+customerName+" was interrupted");
+                    System.out.println(e.getMessage());
+                }
+            }
+
+        }
+
     }
+
+    public void stopCustomer() {
+        this.running = false;
+    }
+
 
     public void createCustomerID(List<Customer> vendorsList) {
         int lastIndex = 0;

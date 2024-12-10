@@ -2,10 +2,7 @@ package org.example.ticketingapplication;
 
 import jakarta.annotation.PostConstruct;
 import org.example.ticketingapplication.configuration.AppConfig;
-import org.example.ticketingapplication.model.Customer;
-import org.example.ticketingapplication.model.Event;
-import org.example.ticketingapplication.model.Ticket;
-import org.example.ticketingapplication.model.Vendor;
+import org.example.ticketingapplication.model.*;
 import org.example.ticketingapplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -38,6 +35,9 @@ public class TicketingApplication {
     @Autowired
     private AppConfig appConfig;
 
+    @Autowired
+    private TicketPool ticketPool;
+
 
     public static void main(String[] args) {
         SpringApplication.run(TicketingApplication.class, args);
@@ -48,23 +48,25 @@ public class TicketingApplication {
 
     @PostConstruct
     public void testDatabase(){
-        customerService.deleteAllCustomers();
-        vendorService.deleteAllVendors();
-
-        Vendor vendor = vendorService.createVendor("Vihanga", "vihanga.isu@gmail.com");
-        Event event = eventService.createEvent("CodeSprint",LocalDateTime.now(),"IIT","StartupBuisness",500,vendor);
-        Ticket ticket = ticketService.createTicket(event,BigDecimal.valueOf(5000),LocalDateTime.now());
-        Customer customer = customerService.createCustomer("Chanuka", "chanukasamajith@gmail.com",true);
+//        customerService.deleteAllCustomers();
+//        vendorService.deleteAllVendors();
 
     }
 
     @PostConstruct
     public void init(){
-        //TEst Config File
-        String fileName = "Configuration.JSON";
-        configService.loadConfigFile(fileName);
-        System.out.println(appConfig.toString());
-        System.out.println("\n\n\nLook Up\n\n\n");
+//        Test Config File
+//        String fileName = "Configuration.JSON";
+//        configService.loadConfigFile(fileName);
+//        System.out.println(appConfig.toString());
+//        System.out.println("\n\n\nLook Up\n\n\n");
+
+    }
+
+    @PostConstruct
+    public void testTicketPool(){
+
+        customerService.createCustomer("Chanux","chanuxBro@gmail.com", true);
 
     }
 }

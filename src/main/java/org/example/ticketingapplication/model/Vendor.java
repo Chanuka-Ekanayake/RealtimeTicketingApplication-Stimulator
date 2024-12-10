@@ -4,6 +4,7 @@ package org.example.ticketingapplication.model;
 
 import jakarta.persistence.*;
 import org.example.ticketingapplication.service.EventService;
+import org.example.ticketingapplication.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -185,6 +186,45 @@ public class Vendor implements Runnable {
     @Override
     public void run() {
 
+        if(ticketPool == null || ticketReleaseRate == 0 || totalTicketsToBeSold == 0){
+            System.out.println("Please Initialise the TicketPool, TicketReleaseRate and the Total Tickets to be sold in the TicketPool!");
+            stopVendor();
+        }
+
+        running = true;
+        System.out.println("Vendor - " + vendorName +"  started Adding Tickets!");
+
+        int totalTicketsAdded = 0;
+
+        while (running && totalTicketsToBeSold > 0) {
+
+            if(eventsList.isEmpty()){
+                System.out.println("Event list is empty for the Vendor! Please add Events and Tickets to interact with the TicketPool!");
+            }else {
+                for (Event event : eventsList) {
+                    for (Ticket ticket : event.getTickets()) {
+                        try {
+                            ticketPool.addTicket(ticket, vendorName);
+                            totalTicketsAdded++;
+
+                            if (totalTicketsAdded % ticketReleaseRate == 0) {
+                                Thread.sleep(ticketReleaseRate * 3000L); //Sleep More than customers to make tickets Demanding
+                            }
+
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            System.out.println("Vendor - " + vendorName + " is interrupted!");
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println("No. of tickets added by "+vendorName+": " + totalTicketsAdded);
+    }
+
+    public void stopVendor() {
+        running = false;
     }
 
 

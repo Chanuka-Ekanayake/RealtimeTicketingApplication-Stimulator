@@ -5,6 +5,7 @@ package org.example.ticketingapplication.model;
 
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -67,6 +68,10 @@ public class TicketPool {
             }
 
             tickets.offer(ticket);
+
+            ticket.getEvent().setTicketAvailable(ticket.getEvent().getTicketAvailable()-1);
+            ticket.getEvent().getVendor().setTotalTicketsToBeSold(ticket.getEvent().getVendor().getTotalTicketsToBeSold()-1);
+
             System.out.println(ticket.getTicketId() + " added to the pool by " + vendorName);
             notEmpty.signalAll(); //Notify threads which are waiting to buy tickets
 
@@ -78,7 +83,7 @@ public class TicketPool {
 
 
     //Removing tickets from the pool
-    public void buyTicket(Ticket ticket, String CustomerName) throws InterruptedException {
+    public void buyTicket(Customer customer) throws InterruptedException {
         lock.lock();
         try {
             while (tickets.isEmpty()) {
@@ -86,8 +91,12 @@ public class TicketPool {
                 notEmpty.await(); //Holds the threads to buy tickets
             }
 
-            tickets.poll();
-            System.out.println(ticket.getTicketId() + " bought ticket by " + CustomerName);
+            Ticket boughtTicket = tickets.poll();
+            System.out.println(boughtTicket.getTicketId() + " bought ticket by " + customer.getCustomerName());
+
+            boughtTicket.setCustomer(customer);
+            boughtTicket.getEvent().getVendor().setTotalProfit(boughtTicket.getPrice());
+
             notFull.signalAll(); //Notifies the threads which are waiting to add tickets
 
         } finally {
