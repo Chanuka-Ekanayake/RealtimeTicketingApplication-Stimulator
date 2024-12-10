@@ -76,7 +76,6 @@ public class TicketService {
         Ticket ticket = new Ticket(event, price, expireDateTime);
         ticket.createTicketID(ticketRepository.findAll());
         event.addTicket(ticket);
-        eventRepository.save(event);
         return ticketRepository.save(ticket);
     }
 }

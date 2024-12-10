@@ -40,7 +40,7 @@ public class Event {
     private int maxTickets;
 
     @Column(nullable = false)
-    private int ticketAvailable = maxTickets;
+    private int ticketAvailable = 0;
 
     @ManyToOne()
     @JoinColumn(name = "vendor_id", referencedColumnName = "vendorId")
@@ -49,8 +49,6 @@ public class Event {
     @Transient
     private LinkedList<Ticket> tickets = new LinkedList<>();
 
-    @Transient
-    private TicketService ticketService;
 
     public Event(String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets, Vendor vendor) {
         this.eventName = eventName;
@@ -163,11 +161,17 @@ public class Event {
     }
 
     public void setTickets(LinkedList<Ticket> tickets) {
-        this.tickets = tickets;
+        for (Ticket ticket : tickets) {
+            if(ticket.getEvent().getEventId().equals(this.eventId)) {
+                this.tickets.add(ticket);
+            }
+        }
     }
 
     public void addTicket(Ticket ticket) {
-        tickets.add(ticket);
+        if(ticket.getEvent().getEventId().equals(this.eventId)) {
+            this.tickets.add(ticket);
+        }
         ++ticketAvailable;
     }
 
@@ -199,9 +203,7 @@ public class Event {
         String GeneratedEventID;
 
         if(eventsList.isEmpty()){
-
-            GeneratedEventID = vendor.getVendorId() + "-E-0001";
-
+            GeneratedEventID = "E-0001";
             this.eventId = GeneratedEventID;
 
         } else {
@@ -210,12 +212,11 @@ public class Event {
             //Convert the string to integer
             try{
                 lastIndex = Integer.parseInt(lastDigits);
-            }
-            catch (NumberFormatException nfe){
+            } catch (NumberFormatException nfe){
                 System.out.println("Invalid Event ID");
             }
             String eventLastIndex = String.format("%04d", ++lastIndex); //Convert the integer into 4 decimal Number
-            GeneratedEventID = vendor.getVendorId() + "-E-"+eventLastIndex;
+            GeneratedEventID = "E-"+eventLastIndex;
             this.eventId = GeneratedEventID;
         }
     }

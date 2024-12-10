@@ -1,9 +1,6 @@
 package org.example.ticketingapplication.model;
 
 
-
-
-
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -199,7 +196,6 @@ public class Customer implements Runnable {
                     System.out.println(e.getMessage());
                 }
             }
-
         }
 
     }

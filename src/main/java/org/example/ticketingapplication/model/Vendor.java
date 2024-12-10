@@ -3,9 +3,6 @@ package org.example.ticketingapplication.model;
 
 
 import jakarta.persistence.*;
-import org.example.ticketingapplication.service.EventService;
-import org.example.ticketingapplication.service.TicketService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,7 +30,7 @@ public class Vendor implements Runnable {
     private String vendorEmail;
 
     @Transient
-    private int totalTicketsToBeSold = 0;
+    private int totalTicketsToBeSold ;
 
     @Transient
     private int ticketReleaseRate;
@@ -153,13 +150,10 @@ public class Vendor implements Runnable {
     }
 
 
-    public List<Event> getEventsList() {
+    public LinkedList<Event> getEventsList() {
         return eventsList;
     }
 
-    public void setEventsList(LinkedList<Event> eventsList) {
-        this.eventsList = eventsList;
-    }
 
     public void addEvent(Event event){
         eventsList.add(event);
@@ -240,21 +234,6 @@ public class Vendor implements Runnable {
             System.out.println("\t"+event.getEventName()+"--"+event.getEventId());
         }
     }
-
-    //Create tickets for a specific event
-    public void createTickets(Event event, BigDecimal ticketPrice, LocalDateTime ticketExpireDateTime) {
-
-        while (totalTicketsToBeSold > 0) {
-            for(Event VendorEvents:eventsList){
-                if(VendorEvents.getEventId().equals(event.getEventId())){
-                    VendorEvents.addTicket(new Ticket(event, ticketPrice, ticketExpireDateTime));
-                    totalTicketsToBeSold--;
-                }
-            }
-        }
-    }
-
-    //Create tickets automatically for required Events
 
 
     //Create Unique VendorID's

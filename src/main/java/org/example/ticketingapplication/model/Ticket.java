@@ -121,13 +121,14 @@ public class Ticket {
 
         if(ticketsList.isEmpty()){
             if(event.getEventId() != null) {
-                GeneratedTicketID = event.getEventId() + "-T-0001";
+                GeneratedTicketID = "T-0001";
             } else {
-                GeneratedTicketID = "0000-T-0001";
+                GeneratedTicketID = "T-0001";
             }
             this.ticketId = GeneratedTicketID;
 
         } else {
+
             String lastDigits = ticketsList.getLast().getTicketId().substring(ticketsList.getLast().getTicketId().length() - 4); //Extracts the last 5 digits from the TicketID
 
             //Convert the string to integer
@@ -138,7 +139,7 @@ public class Ticket {
                 System.out.println("Invalid Event ID");
             }
             String TicketLastIndex = String.format("%04d", ++lastIndex); //Convert the integer into 4 decimal Number
-            GeneratedTicketID = event.getEventId() + "-T-" + TicketLastIndex;
+            GeneratedTicketID = "T-" + TicketLastIndex;
             this.ticketId = GeneratedTicketID;
         }
     }

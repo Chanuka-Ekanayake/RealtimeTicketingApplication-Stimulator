@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -104,13 +103,15 @@ public class EventService {
     public void createEventTickets(Event event, BigDecimal price, LocalDateTime dateTime){
         if(event.getTickets().isEmpty()){
             for (int i = 0; i < event.getMaxTickets(); i++) {
-                ticketService.createTicket(event, price, dateTime);
+                Ticket newTicket = ticketService.createTicket(event, price, dateTime);
+                System.out.println(newTicket.getTicketId() + "Created");
             }
         } else if(event.getTicketAvailable() == event.getMaxTickets()) {
             System.out.println("For "+event.getEventName()+"Maximum ticketCount is reached!\nPlease Update the Maximum Ticket Count.");
         } else {
             for (int i = 0; i < event.getMaxTickets()- event.getTicketAvailable(); i++) {
-                ticketService.createTicket(event, price, dateTime);
+                Ticket newTicket = ticketService.createTicket(event, price, dateTime);
+                System.out.println(newTicket.getTicketId() + "Created");
             }
         }
     }

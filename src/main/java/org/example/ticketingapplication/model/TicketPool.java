@@ -98,7 +98,6 @@ public class TicketPool {
                 ticket.getEvent().getVendor().setTotalTicketsToBeSold(ticket.getEvent().getVendor().getTotalTicketsToBeSold() - 1);
             }
 
-            System.out.println(ticket.getTicketId() + " added to the pool by " + vendorName);
             notEmpty.signalAll(); // Notify waiting threads
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
