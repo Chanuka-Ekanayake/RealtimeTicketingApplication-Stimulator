@@ -137,7 +137,8 @@ public class Ticket {
             catch (NumberFormatException nfe){
                 System.out.println("Invalid Event ID");
             }
-            GeneratedTicketID = event.getEventId() + "-T-" + ++lastIndex;
+            String TicketLastIndex = String.format("%04d", ++lastIndex); //Convert the integer into 4 decimal Number
+            GeneratedTicketID = event.getEventId() + "-T-" + TicketLastIndex;
             this.ticketId = GeneratedTicketID;
         }
     }

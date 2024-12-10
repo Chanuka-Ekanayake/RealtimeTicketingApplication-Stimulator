@@ -9,7 +9,9 @@ import org.example.ticketingapplication.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -18,12 +20,14 @@ public class EventService {
     private final EventRepository eventRepository;
     private final TicketRepository ticketRepository;
     private final VendorRepository vendorRepository;
+    private final TicketService ticketService;
 
     @Autowired
-    public EventService(EventRepository eventRepository, TicketService ticketService, TicketRepository ticketRepository, VendorRepository vendorRepository) {
+    public EventService(EventRepository eventRepository, TicketService ticketService, TicketRepository ticketRepository, VendorRepository vendorRepository ) {
         this.eventRepository = eventRepository;
         this.ticketRepository = ticketRepository;
         this.vendorRepository = vendorRepository;
+        this.ticketService = ticketService;
     }
 
     public Event saveEvent(Event event) {
@@ -94,6 +98,26 @@ public class EventService {
                     ticketRepository.deleteById(ticket.getTicketId()); //Delete tickets related to the event
                 }
             }
+        }
+    }
+
+    public void createEventTickets(Event event, BigDecimal price, LocalDateTime dateTime){
+        if(event.getTickets().isEmpty()){
+            for (int i = 0; i < event.getMaxTickets(); i++) {
+                ticketService.createTicket(event, price, dateTime);
+            }
+        } else if(event.getTicketAvailable() == event.getMaxTickets()) {
+            System.out.println("For "+event.getEventName()+"Maximum ticketCount is reached!\nPlease Update the Maximum Ticket Count.");
+        } else {
+            for (int i = 0; i < event.getMaxTickets()- event.getTicketAvailable(); i++) {
+                ticketService.createTicket(event, price, dateTime);
+            }
+        }
+    }
+
+    public void deleteEventTickets(Event event, BigDecimal price, LocalDateTime dateTime){
+        for(Ticket ticket : event.getTickets()) {
+            ticketService.deleteTicketById(ticket.getTicketId());
         }
     }
 }

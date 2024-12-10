@@ -125,7 +125,7 @@ public class Vendor implements Runnable {
         this.totalProfit = totalProfit.setScale(2, RoundingMode.HALF_UP); //Rounds up the amount of money for 2 decimal places
     }
 
-    public void setTicketingProcess(TicketPool ticketPool, int totalTicketsToBeSold, int ticketReleaseRate) {
+    public void ticketSellingProcess(TicketPool ticketPool, int totalTicketsToBeSold, int ticketReleaseRate) {
         this.ticketPool = ticketPool;
         this.totalTicketsToBeSold = totalTicketsToBeSold;
         this.ticketReleaseRate = ticketReleaseRate;
@@ -205,6 +205,7 @@ public class Vendor implements Runnable {
                     for (Ticket ticket : event.getTickets()) {
                         try {
                             ticketPool.addTicket(ticket, vendorName);
+
                             totalTicketsAdded++;
 
                             if (totalTicketsAdded % ticketReleaseRate == 0) {
@@ -254,33 +255,7 @@ public class Vendor implements Runnable {
     }
 
     //Create tickets automatically for required Events
-    public void createTicketsAutomatically(BigDecimal ticketPrice, LocalDateTime ticketExpireDateTime) {
-        int ticketsFilled = 0;
-        while (totalTicketsToBeSold > 0) {
-            for (Event event : eventsList) {
-                if (event.getTicketAvailable() < event.getMaxTickets()) {
-                    event.createEventTicket(event, ticketPrice, ticketExpireDateTime);
-                    ticketsFilled++;
-                    totalTicketsToBeSold--;
-                }
-            }
-        }
 
-        if(ticketsFilled > 0){
-            System.out.println("Tickets filled: "+ticketsFilled);
-        } else {
-            System.out.println("No tickets filled");
-        }
-    }
-
-
-    public void removeTicketBulk(String eventID, int ticketCount) {
-        for(Event event : eventsList){
-            if(event.getEventId().equals(eventID)){
-                event.deleteEventTickets(ticketCount);
-            }
-        }
-    }
 
     //Create Unique VendorID's
     public void createVendorID(List<Vendor> vendorsList) {
@@ -299,7 +274,9 @@ public class Vendor implements Runnable {
             catch (NumberFormatException nfe){
                 System.out.println("Invalid Vendor ID");
             }
-            GeneratedVendorID = "V-" + ++lastIndex;
+
+            String vendorLastIndex = String.format("%04d", ++lastIndex); //Convert the integer into 4 decimal Number
+            GeneratedVendorID = "V-" + vendorLastIndex;
         }
         this.vendorId = GeneratedVendorID;
     }

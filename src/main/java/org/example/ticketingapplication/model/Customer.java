@@ -152,6 +152,14 @@ public class Customer implements Runnable {
         ticket.setCustomer(null);
     }
 
+    public void ticketBuyingProperties(TicketPool ticketPool, int buyingQuantity, int customerRetrievalRate) {
+        this.buyingQuantity = buyingQuantity;
+        this.customerRetrievalRate = customerRetrievalRate;
+        this.ticketPool = ticketPool;
+    }
+
+
+
 
 
     @Override
@@ -201,14 +209,14 @@ public class Customer implements Runnable {
     }
 
 
-    public void createCustomerID(List<Customer> vendorsList) {
+    public void createCustomerID(List<Customer> customersList) {
         int lastIndex = 0;
-        String GeneratedVendorID;
+        String GeneratedCustomerID;
 
-        if(vendorsList.isEmpty()){
-            GeneratedVendorID = "C-0001";
+        if(customersList.isEmpty()){
+            GeneratedCustomerID = "C-0001";
         } else {
-            String lastDigits = vendorsList.getLast().getCustomerId().substring(vendorsList.getLast().getCustomerId().length() - 4); //Extracts the last 5 digits from the CustomerID
+            String lastDigits = customersList.getLast().getCustomerId().substring(customersList.getLast().getCustomerId().length() - 4); //Extracts the last 5 digits from the CustomerID
 
             //Convert the string to integer
             try{
@@ -217,9 +225,11 @@ public class Customer implements Runnable {
             catch (NumberFormatException nfe){
                 System.out.println("Invalid Customer ID");
             }
-            GeneratedVendorID = "C-" + ++lastIndex;
+
+            String customerLastIndex = String.format("%04d", ++lastIndex); //Convert the integer into 4 decimal Number
+            GeneratedCustomerID = "C-" + customerLastIndex;
         }
-        this.customerId = GeneratedVendorID;
+        this.customerId = GeneratedCustomerID;
     }
 }
 

@@ -3,6 +3,8 @@ package org.example.ticketingapplication.model;
 
 
 import jakarta.persistence.*;
+import org.example.ticketingapplication.service.TicketService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -46,6 +48,9 @@ public class Event {
 
     @Transient
     private LinkedList<Ticket> tickets = new LinkedList<>();
+
+    @Transient
+    private TicketService ticketService;
 
     public Event(String eventName, LocalDateTime eventDateTime, String eventVenue, String eventCategory, int maxTickets, Vendor vendor) {
         this.eventName = eventName;
@@ -194,11 +199,9 @@ public class Event {
         String GeneratedEventID;
 
         if(eventsList.isEmpty()){
-            if(vendor.getVendorId() != null) {
-                GeneratedEventID = vendor.getVendorId() + "-E-0001";
-            } else {
-                GeneratedEventID = "0000-E-0001";
-            }
+
+            GeneratedEventID = vendor.getVendorId() + "-E-0001";
+
             this.eventId = GeneratedEventID;
 
         } else {
@@ -211,34 +214,10 @@ public class Event {
             catch (NumberFormatException nfe){
                 System.out.println("Invalid Event ID");
             }
-            GeneratedEventID = vendor.getVendorId() + "-E-" + ++lastIndex;
+            String eventLastIndex = String.format("%04d", ++lastIndex); //Convert the integer into 4 decimal Number
+            GeneratedEventID = vendor.getVendorId() + "-E-"+eventLastIndex;
             this.eventId = GeneratedEventID;
         }
     }
 
-    public void createEventTicket(Event event, BigDecimal price, LocalDateTime dateTime){
-        if(tickets.isEmpty()){
-            for (int i = 0; i < maxTickets; i++) {
-                Ticket newTicket = new Ticket(event, price, dateTime);
-                newTicket.createTicketID(tickets);
-                addTicket(newTicket);
-            }
-        } else if (ticketAvailable == maxTickets) {
-            System.out.println("For "+eventName+"Maximum ticketCount is reached!\nPlease Update the Maximum Ticket Count.");
-
-        } else {
-            for (int i = 0; i < (maxTickets-ticketAvailable); i++) {
-                Ticket newTicket = new Ticket(event, price, dateTime);
-                newTicket.createTicketID(tickets);
-                addTicket(newTicket);
-            }
-        }
-    }
-
-    public void deleteEventTickets(int deleteTicketCount){
-        for (int i = 0; i < deleteTicketCount; i++) {
-            System.out.println(tickets.get(i).getTicketId() + "Removed");
-            removeTicket(tickets.get(i));
-        }
-    }
 }

@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class TicketPool {
-    private final ConcurrentLinkedQueue<Ticket> tickets = new ConcurrentLinkedQueue<>();
+    private final Queue<Ticket> tickets = new LinkedList<>();
     private int maxCapacity;
 
     private final Lock lock = new ReentrantLock();
@@ -44,7 +44,7 @@ public class TicketPool {
         this.maxCapacity = maxCapacity;
     }
 
-    public ConcurrentLinkedQueue<Ticket> getTickets() {
+    public Queue<Ticket> getTickets() {
         return tickets;
     }
 
@@ -59,31 +59,59 @@ public class TicketPool {
 
 
     //Adding Tickets to the pool
-    public void addTicket(Ticket ticket, String vendorName) throws InterruptedException {
+//    public void addTicket(Ticket ticket, String vendorName) {
+//        lock.lock();
+//        try{
+//            while (tickets.size() >= maxCapacity) {
+//                System.out.println("Ticket pool is full, Waiting for customers to buy...");
+//                notFull.await(); //Holds the thread until customers buy few tickets
+//            }
+//
+//            tickets.offer(ticket);
+//
+//            ticket.getEvent().setTicketAvailable(ticket.getEvent().getTicketAvailable()-1);
+//            ticket.getEvent().getVendor().setTotalTicketsToBeSold(ticket.getEvent().getVendor().getTotalTicketsToBeSold()-1);
+//
+//            System.out.println(ticket.getTicketId() + " added to the pool by " + vendorName);
+//            notEmpty.signalAll(); //Notify threads which are waiting to buy tickets
+//
+//        }catch (InterruptedException e){
+//            System.out.println("Vendor thread was interrupted.");
+//        } finally {
+//            lock.unlock();
+//        }
+//
+//    }
+
+    public void addTicket(Ticket ticket, String vendorName) {
         lock.lock();
-        try{
+        try {
             while (tickets.size() >= maxCapacity) {
                 System.out.println("Ticket pool is full, Waiting for customers to buy...");
-                notFull.await(); //Holds the thread until customers buy few tickets
+                notFull.await(); // Wait for space in the pool
             }
-
+            System.out.println(ticket.getTicketId() + " added to the pool by " + vendorName);
             tickets.offer(ticket);
 
-            ticket.getEvent().setTicketAvailable(ticket.getEvent().getTicketAvailable()-1);
-            ticket.getEvent().getVendor().setTotalTicketsToBeSold(ticket.getEvent().getVendor().getTotalTicketsToBeSold()-1);
+            if (ticket.getEvent() != null && ticket.getEvent().getVendor() != null) {
+                ticket.getEvent().setTicketAvailable(ticket.getEvent().getTicketAvailable() - 1);
+                ticket.getEvent().getVendor().setTotalTicketsToBeSold(ticket.getEvent().getVendor().getTotalTicketsToBeSold() - 1);
+            }
 
             System.out.println(ticket.getTicketId() + " added to the pool by " + vendorName);
-            notEmpty.signalAll(); //Notify threads which are waiting to buy tickets
-
+            notEmpty.signalAll(); // Notify waiting threads
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Vendor thread was interrupted.");
         } finally {
             lock.unlock();
         }
-
     }
 
 
+
     //Removing tickets from the pool
-    public void buyTicket(Customer customer) throws InterruptedException {
+    public void buyTicket(Customer customer){
         lock.lock();
         try {
             while (tickets.isEmpty()) {
@@ -99,6 +127,8 @@ public class TicketPool {
 
             notFull.signalAll(); //Notifies the threads which are waiting to add tickets
 
+        } catch (InterruptedException e) {
+            System.out.println("Vendor thread was interrupted.");
         } finally {
             lock.unlock();
         }

@@ -15,7 +15,7 @@ public class ThreadPoolManager {
 
     public ThreadPoolManager() {
         this.executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-        this.executor.setCorePoolSize(2); //Minimum Number of threads in the threadPool
+        this.executor.setCorePoolSize(10); //Minimum Number of threads in the threadPool
         this.executor.setMaximumPoolSize(50); //Maximum Number of Threads in the ThreadPool
         this.executor.setKeepAliveTime(60, TimeUnit.SECONDS); // Keep idle threads alive for 60 seconds
 
