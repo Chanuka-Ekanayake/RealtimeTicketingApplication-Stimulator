@@ -6,5 +6,33 @@ package org.example.ticketingapplication.util;
  */
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
 public class SystemLogger {
+
+    private static final Logger logger = LoggerFactory.getLogger(SystemLogger.class);
+
+    // Log an info message
+    public void logInfo(String message) {
+        logger.info(message);
+    }
+
+    // Log a warning message
+    public void logWarning(String message) {
+        logger.warn(message);
+    }
+
+    // Log an error message
+    public void logError(String message, Throwable throwable) {
+        logger.error(message, throwable);
+    }
+
+    // Log a debug message
+    public void logDebug(String message) {
+        logger.debug(message);
+    }
 }
+

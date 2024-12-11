@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.example.ticketingapplication.configuration.AppConfig;
 import org.example.ticketingapplication.model.*;
 import org.example.ticketingapplication.service.*;
+import org.example.ticketingapplication.util.SystemLogger;
 import org.example.ticketingapplication.util.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -44,7 +45,8 @@ public class TicketingApplication {
 
     @Autowired
     private AppConfig aConfig;
-
+    @Autowired
+    private SystemLogger systemLogger;
 
 
     public static void main(String[] args) {
@@ -116,6 +118,10 @@ public class TicketingApplication {
 
         //Non-VIP Customers Here
         threadPoolManager.submitTask(c2);
+
+        threadPoolManager.shutdown();
+
+        systemLogger.logInfo("Ticket pool round Completed!");
 
     }
 
