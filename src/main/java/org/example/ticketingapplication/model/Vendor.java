@@ -215,7 +215,6 @@ public class Vendor implements Runnable {
                                 break;
                             } else if (!running) {
                                 break;
-
                             }
 
                         } catch (InterruptedException e) {

@@ -196,8 +196,8 @@ public class Customer implements Runnable {
 
                     } else if (!running) {
                         break;
-
                     }
+
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

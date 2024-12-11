@@ -58,6 +58,8 @@ public class ConfigService {
             appConfig.setTicketReleaseRate(rootNode.has("ticketReleaseRate") ? rootNode.get("ticketReleaseRate").asInt() : 1);
             appConfig.setCustomerRetrievalRate(rootNode.has("customerRetrievalRate") ? rootNode.get("customerRetrievalRate").asInt() : 1);
             appConfig.setMaxTicketsPoolCapacity(rootNode.has("maxTicketPoolCapacity") ? rootNode.get("maxTicketPoolCapacity").asInt() : 0);
+            appConfig.setCustomerBuyingQuantity(rootNode.has("CustomerBuyingQuantity") ? rootNode.get("CustomerBuyingQuantity").asInt() : 0);
+            appConfig.setVendorSellingQuantity(rootNode.has("VendorSellingQuantity") ? rootNode.get("VendorSellingQuantity").asInt() : 0);
 
         } catch (IOException e) {
             System.out.println("Error reading JSON file: " + e.getMessage());

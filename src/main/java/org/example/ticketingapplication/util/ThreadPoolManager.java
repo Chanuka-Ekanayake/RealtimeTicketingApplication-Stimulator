@@ -49,4 +49,12 @@ public class ThreadPoolManager {
             System.out.println("New thread pool initialized.");
         }
     }
+
+    public void waitForCompletion() {
+        try {
+            Thread.sleep(5000); // Wait for threads to complete
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }

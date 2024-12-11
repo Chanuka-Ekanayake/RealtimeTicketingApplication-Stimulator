@@ -14,6 +14,8 @@ public class AppConfig {
     private int ticketReleaseRate;
     private int customerRetrievalRate;
     private int maxTicketsPoolCapacity;
+    private int customerBuyingQuantity;
+    private int vendorSellingQuantity;
 
     public int getTotalTickets() {
         return totalTickets;
@@ -45,6 +47,22 @@ public class AppConfig {
 
     public void setMaxTicketsPoolCapacity(int maxTicketsPoolCapacity) {
         this.maxTicketsPoolCapacity = maxTicketsPoolCapacity;
+    }
+
+    public int getCustomerBuyingQuantity() {
+        return customerBuyingQuantity;
+    }
+
+    public void setCustomerBuyingQuantity(int customerBuyingQuantity) {
+        this.customerBuyingQuantity = customerBuyingQuantity;
+    }
+
+    public int getVendorSellingQuantity() {
+        return vendorSellingQuantity;
+    }
+
+    public void setVendorSellingQuantity(int vendorSellingQuantity) {
+        this.vendorSellingQuantity = vendorSellingQuantity;
     }
 
     @Override

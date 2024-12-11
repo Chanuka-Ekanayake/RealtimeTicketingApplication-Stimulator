@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,6 +64,10 @@ public class TicketPool {
     public void addTicket(Ticket ticket, String vendorName) {
         lock.lock();
         try{
+
+            boolean ticketsAvailable = notFull.await(30, TimeUnit.SECONDS);
+
+
             while (tickets.size() >= maxCapacity) {
                 System.out.println("Ticket pool is full, Waiting for customers to buy...");
                 notFull.await(); //Holds the thread until customers buy few tickets
@@ -93,6 +98,7 @@ public class TicketPool {
     public void buyTicket(Customer customer){
         lock.lock();
         try {
+
             while (tickets.isEmpty()) {
                 System.out.println("Not enough tickets to buy, waiting for vendors to add tickets");
                 notEmpty.await(); //Holds the threads to buy tickets

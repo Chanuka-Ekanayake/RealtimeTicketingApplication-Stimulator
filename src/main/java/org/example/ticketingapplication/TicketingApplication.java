@@ -81,55 +81,52 @@ public class TicketingApplication {
     @PostConstruct
     public void testTicketPool(){
 
-        ConfigService configService = new ConfigService(appConfig);
-        configService.loadConfigFile();
-
-        TicketPool ticketPool = new TicketPool(appConfig.getMaxTicketsPoolCapacity(),appConfig.getTotalTickets());
-
-        List<Customer> customersList = initializerService.loadCustomersFromDatabase();
-        List<Vendor> vendorsList = initializerService.loadVendorsFromDatabase();
-        List<Event> eventsList = initializerService.loadEventsFromDatabase();
-        List<Ticket> ticketsList = initializerService.loadTicketsFromDatabase();
-
-
-
-        Customer c1 = customersList.get(0);
-        Customer c2 = customersList.get(1);
-
-        Vendor v1 = vendorsList.get(0);
-        Vendor v2 = vendorsList.get(1);
-
-
-        c1.ticketBuyingProperties(ticketPool,7,appConfig.getCustomerRetrievalRate());
-        c2.ticketBuyingProperties(ticketPool,6,appConfig.getCustomerRetrievalRate());
-
-        v1.ticketSellingProcess(ticketPool,5,appConfig.getTicketReleaseRate());
-        v2.ticketSellingProcess(ticketPool,10,appConfig.getTicketReleaseRate());
-
-        threadPoolManager.submitTask(v1);
-        threadPoolManager.submitTask(v2);
-
-        //VIP Customers here
-        threadPoolManager.submitTask(c1);
-
-        threadPoolManager.shutdown();
-        waitForCompletion();
-        threadPoolManager.initializeNewPool();
-
-        //Non-VIP Customers Here
-        threadPoolManager.submitTask(c2);
-
-        threadPoolManager.shutdown();
-
-        systemLogger.logInfo("Ticket pool round Completed!");
-
+//        ConfigService configService = new ConfigService(appConfig);
+//        configService.loadConfigFile();
+////
+//        TicketPool ticketPool = new TicketPool(appConfig.getMaxTicketsPoolCapacity(),appConfig.getTotalTickets());
+////
+//        List<Customer> customersList = initializerService.loadCustomersFromDatabase();
+//        List<Vendor> vendorsList = initializerService.loadVendorsFromDatabase();
+//        List<Event> eventsList = initializerService.loadEventsFromDatabase();
+//        List<Ticket> ticketsList = initializerService.loadTicketsFromDatabase();
+////
+////
+////
+//        Customer c1 = customersList.get(0);
+//        Customer c2 = customersList.get(1);
+//
+//        Vendor v1 = vendorsList.get(0);
+//        Vendor v2 = vendorsList.get(1);
+//
+//
+//        c1.ticketBuyingProperties(ticketPool,7,appConfig.getCustomerRetrievalRate());
+//        c2.ticketBuyingProperties(ticketPool,6,appConfig.getCustomerRetrievalRate());
+//
+//        v1.ticketSellingProcess(ticketPool,5,appConfig.getTicketReleaseRate());
+//        v2.ticketSellingProcess(ticketPool,10,appConfig.getTicketReleaseRate());
+//
+//
+//
+//        threadPoolManager.submitTask(v1);
+//        threadPoolManager.submitTask(v2);
+//
+//        //VIP Customers here
+//        threadPoolManager.submitTask(c1);
+//
+//        threadPoolManager.shutdown();
+//        threadPoolManager.waitForCompletion();
+//        threadPoolManager.reinitialize();
+//
+//        //Non-VIP Customers Here
+//        threadPoolManager.submitTask(c2);
+//
+//        threadPoolManager.shutdown();
+////        threadPoolManager.initializeNewPool();
+//
+//        systemLogger.logInfo("Ticket pool round Completed!");
+//
     }
 
-    private void waitForCompletion() {
-        try {
-            Thread.sleep(5000); // Wait for threads to complete
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
+
 }
