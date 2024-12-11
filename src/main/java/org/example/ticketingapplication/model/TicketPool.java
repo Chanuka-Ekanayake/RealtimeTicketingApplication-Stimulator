@@ -23,6 +23,7 @@ public class TicketPool {
     private final Lock lock = new ReentrantLock();
     private final Condition notEmpty = lock.newCondition();
     private final Condition notFull = lock.newCondition();
+    private volatile boolean vipActive = false;
 
     private int totalTicketsSelling;
 
@@ -88,7 +89,7 @@ public class TicketPool {
 
 
 
-    //Removing tickets from the pool
+//    Removing tickets from the pool
     public void buyTicket(Customer customer){
         lock.lock();
         try {
@@ -97,13 +98,16 @@ public class TicketPool {
                 notEmpty.await(); //Holds the threads to buy tickets
             }
 
+            //Remove ticket
             Ticket boughtTicket = tickets.poll();
+
             System.out.println(boughtTicket.getTicketId() + " bought ticket by " + customer.getCustomerName());
 
             boughtTicket.setCustomer(customer);
             boughtTicket.getEvent().getVendor().setTotalProfit(boughtTicket.getPrice());
 
-            notFull.signalAll(); //Notifies the threads which are waiting to add tickets
+
+            notFull.signalAll();
 
         } catch (InterruptedException e) {
             System.out.println("Vendor thread was interrupted.");
@@ -111,6 +115,12 @@ public class TicketPool {
             lock.unlock();
         }
     }
+
+
+
+
+
+
 
     //removing expired tickets from the pool
     public void removeExpiredTickets() {

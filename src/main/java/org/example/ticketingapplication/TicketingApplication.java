@@ -98,17 +98,32 @@ public class TicketingApplication {
         Vendor v2 = vendorsList.get(1);
 
 
-
         c1.ticketBuyingProperties(ticketPool,7,appConfig.getCustomerRetrievalRate());
-        c2.ticketBuyingProperties(ticketPool,3,appConfig.getCustomerRetrievalRate());
+        c2.ticketBuyingProperties(ticketPool,6,appConfig.getCustomerRetrievalRate());
 
         v1.ticketSellingProcess(ticketPool,5,appConfig.getTicketReleaseRate());
         v2.ticketSellingProcess(ticketPool,10,appConfig.getTicketReleaseRate());
 
         threadPoolManager.submitTask(v1);
         threadPoolManager.submitTask(v2);
+
+        //VIP Customers here
         threadPoolManager.submitTask(c1);
+
+        threadPoolManager.shutdown();
+        waitForCompletion();
+        threadPoolManager.initializeNewPool();
+
+        //Non-VIP Customers Here
         threadPoolManager.submitTask(c2);
 
+    }
+
+    private void waitForCompletion() {
+        try {
+            Thread.sleep(5000); // Wait for threads to complete
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

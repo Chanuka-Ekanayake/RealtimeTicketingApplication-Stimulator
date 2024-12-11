@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ThreadPoolManager {
 
-    private final ThreadPoolExecutor executor;
+    private ThreadPoolExecutor executor;
 
     public ThreadPoolManager() {
         this.executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -23,6 +23,10 @@ public class ThreadPoolManager {
 
     //Submit a task to threadPool
     public void submitTask(Runnable task) {
+        if (executor.isShutdown()) {
+            System.out.println("Thread pool is shutdown, cannot submit task.");
+            return;
+        }
         executor.submit(task);
     }
 
@@ -37,5 +41,12 @@ public class ThreadPoolManager {
 
     public int getActiveThreadCount() {
         return executor.getActiveCount();
+    }
+
+    public void initializeNewPool() {
+        if (executor.isShutdown()) {
+            executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+            System.out.println("New thread pool initialized.");
+        }
     }
 }

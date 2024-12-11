@@ -1,13 +1,17 @@
 package org.example.ticketingapplication.service;
 
 
+import jakarta.validation.constraints.Negative;
 import org.example.ticketingapplication.model.Customer;
+import org.example.ticketingapplication.model.Event;
 import org.example.ticketingapplication.model.TicketPool;
 import org.example.ticketingapplication.model.Vendor;
 import org.example.ticketingapplication.util.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +29,7 @@ public class VendorCustomerManager {
     private int vendorTicketsToSell;
     private VendorService vendorService;
     private CustomerService customerService;
+    private EventService eventService;
 
     public VendorCustomerManager(){
 
@@ -44,9 +49,10 @@ public class VendorCustomerManager {
     }
 
     @Autowired
-    public VendorCustomerManager(VendorService vendorService, CustomerService customerService) {
+    public VendorCustomerManager(VendorService vendorService, CustomerService customerService, EventService eventService) {
         this.vendorService = vendorService;
         this.customerService = customerService;
+        this.eventService = eventService;
     }
 
     // Add a new vendor
@@ -55,6 +61,11 @@ public class VendorCustomerManager {
         activeVendors.put(newVendor.getVendorId(), newVendor);
 
         newVendor.ticketSellingProcess(ticketPool,vendorTicketsToSell,ticketReleaseRate); //Initialize Vendor before entering the ticketPool
+
+        System.out.println("Adding a Random Event with 10 tickets to access ticket pool");
+        Event NewEvent = eventService.createEvent(newVendor.getVendorId()+"-E-0001", LocalDateTime.now(),"Sri Lanka","Default evvent",10,newVendor);
+
+        eventService.createEventTickets(NewEvent, BigDecimal.valueOf(1000),LocalDateTime.now()); //Create tickets to the event, Since without ticket vendor cannot access the ticketPool
 
         threadPoolManager.submitTask(newVendor);
         System.out.println("Vendor added and task started: " + vendorName);

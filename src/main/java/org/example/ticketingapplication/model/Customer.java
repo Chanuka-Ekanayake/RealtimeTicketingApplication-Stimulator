@@ -187,7 +187,7 @@ public class Customer implements Runnable {
                     buyingQuantity--;
 
                     if(buyingQuantity % customerRetrievalRate == 0){
-                        Thread.sleep(customerRetrievalRate*1000L); //Customer Sleep less than vendors to make the demand on tickets.(Ensure the ticketPool will not be filled)
+                        Thread.sleep(this.isVIP ? customerRetrievalRate*500L : customerRetrievalRate*1000L); //Customer Sleep less than vendors to make the demand on tickets.(Ensure the ticketPool will not be filled)
                     }
 
                     if(buyingQuantity == 0){
