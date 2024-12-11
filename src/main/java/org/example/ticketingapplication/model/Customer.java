@@ -190,6 +190,11 @@ public class Customer implements Runnable {
                         Thread.sleep(customerRetrievalRate*1000L); //Customer Sleep less than vendors to make the demand on tickets.(Ensure the ticketPool will not be filled)
                     }
 
+                    if(buyingQuantity == 0){
+                        stopCustomer();
+                        break;
+                    }
+
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     System.out.println("Customer "+customerName+" was interrupted");
@@ -197,6 +202,8 @@ public class Customer implements Runnable {
                 }
             }
         }
+
+        System.out.println("Customer "+customerName+" stopped buying tickets");
 
     }
 

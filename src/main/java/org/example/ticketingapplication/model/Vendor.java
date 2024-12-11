@@ -3,10 +3,11 @@ package org.example.ticketingapplication.model;
 
 
 import jakarta.persistence.*;
+import org.example.ticketingapplication.util.ThreadPoolManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,6 +48,9 @@ public class Vendor implements Runnable {
 
     @Transient
     private volatile boolean running = true;
+
+    @Transient
+    private ThreadPoolManager threadPoolManager;
 
 
     public Vendor(String vendorId,String vendorName, String vendorEmail) {
@@ -190,7 +194,7 @@ public class Vendor implements Runnable {
 
         int totalTicketsAdded = 0;
 
-        while (running && totalTicketsToBeSold > 0) {
+        while (running && totalTicketsToBeSold != 0) {
 
             if(eventsList.isEmpty()){
                 System.out.println("Event list is empty for the Vendor! Please add Events and Tickets to interact with the TicketPool!");
@@ -201,9 +205,14 @@ public class Vendor implements Runnable {
                             ticketPool.addTicket(ticket, vendorName);
 
                             totalTicketsAdded++;
+                            totalTicketsToBeSold--;
 
                             if (totalTicketsAdded % ticketReleaseRate == 0) {
                                 Thread.sleep(ticketReleaseRate * 3000L); //Sleep More than customers to make tickets Demanding
+                            }
+
+                            if(totalTicketsToBeSold == 0){
+                                break;
                             }
 
                         } catch (InterruptedException e) {
@@ -211,6 +220,11 @@ public class Vendor implements Runnable {
                             System.out.println("Vendor - " + vendorName + " is interrupted!");
                             System.out.println(e.getMessage());
                         }
+                    }
+
+                    if(totalTicketsToBeSold == 0){
+                        stopVendor();
+                        break;
                     }
                 }
             }
@@ -259,4 +273,5 @@ public class Vendor implements Runnable {
         }
         this.vendorId = GeneratedVendorID;
     }
+
 }
