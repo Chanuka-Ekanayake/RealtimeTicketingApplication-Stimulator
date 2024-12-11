@@ -44,12 +44,23 @@ public class ConfigService {
         } catch (IOException e) {
             System.out.println("Error reading JSON file: " + e.getMessage());
         }
+    }
 
+    public void loadConfigFile() {
+        ObjectMapper objectMapper = new ObjectMapper(); // Converts JSON data into a Java Object
 
+        try {
+            // Parse JSON
+            JsonNode rootNode = objectMapper.readTree(new File(FilePath + "Configuration.json"));
 
+            // Access elements and assign it to the configuration class
+            appConfig.setTotalTickets(rootNode.has("totalTickets") ? rootNode.get("totalTickets").asInt() : 0);
+            appConfig.setTicketReleaseRate(rootNode.has("ticketReleaseRate") ? rootNode.get("ticketReleaseRate").asInt() : 1);
+            appConfig.setCustomerRetrievalRate(rootNode.has("customerRetrievalRate") ? rootNode.get("customerRetrievalRate").asInt() : 1);
+            appConfig.setMaxTicketsPoolCapacity(rootNode.has("maxTicketPoolCapacity") ? rootNode.get("maxTicketPoolCapacity").asInt() : 0);
 
-
-
-
+        } catch (IOException e) {
+            System.out.println("Error reading JSON file: " + e.getMessage());
+        }
     }
 }

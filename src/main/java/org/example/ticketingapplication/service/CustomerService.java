@@ -31,17 +31,17 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public Customer findCustomerById(String id) {
+    public Customer getCustomerById(String id) {
         return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer with id " + id + " not found"));
     }
 
-    public List<Customer> findAllCustomers() {
+    public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
 
     public void deleteCustomer(String id) {
         customerRepository.deleteById(id);
-        for(Ticket ticket : findCustomerById(id).getTickets()) {
+        for(Ticket ticket : getCustomerById(id).getTickets()) {
             ticket.setCustomer(null);
         }
     }

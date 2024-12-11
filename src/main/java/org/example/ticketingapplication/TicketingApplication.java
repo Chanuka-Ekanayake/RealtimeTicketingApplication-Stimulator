@@ -39,6 +39,13 @@ public class TicketingApplication {
     @Autowired
     private ThreadPoolManager threadPoolManager;
 
+    @Autowired
+    private InitializerService initializerService;
+
+    @Autowired
+    private AppConfig aConfig;
+
+
 
     public static void main(String[] args) {
         SpringApplication.run(TicketingApplication.class, args);
@@ -72,78 +79,36 @@ public class TicketingApplication {
     @PostConstruct
     public void testTicketPool(){
 
-        TicketPool ticketPool = new TicketPool(5,50);
+        ConfigService configService = new ConfigService(appConfig);
+        configService.loadConfigFile();
+
+        TicketPool ticketPool = new TicketPool(appConfig.getMaxTicketsPoolCapacity(),appConfig.getTotalTickets());
+
+        List<Customer> customersList = initializerService.loadCustomersFromDatabase();
+        List<Vendor> vendorsList = initializerService.loadVendorsFromDatabase();
+        List<Event> eventsList = initializerService.loadEventsFromDatabase();
+        List<Ticket> ticketsList = initializerService.loadTicketsFromDatabase();
 
 
-        List<Vendor> vendorsList = new ArrayList<>();
-        List<Event> eventsList = new ArrayList<>();
-        List<Customer> customersList = new ArrayList<>();
-        List<Ticket> ticketsList = new ArrayList<>();
-
-        for(Vendor vendor : vendorService.getAllVendors()){
-            vendorsList.add(vendor);
-        }
-
-        for(Event event : eventService.getAllEvents()){
-            eventsList.add(event);
-        }
-
-        for(Customer customer : customerService.findAllCustomers()){
-            customersList.add(customer);
-        }
-
-        for(Ticket ticket : ticketService.getAllTickets()){
-            ticketsList.add(ticket);
-        }
-
-        for(Vendor vendor : vendorsList){
-            for(Event event: eventsList){
-                for(Ticket ticket: ticketsList){
-                    if(ticket.getEvent().getEventId().equals(event.getEventId())){
-                        event.addTicket(ticket);
-                    }
-                }
-                if(event.getVendor().getVendorId().equals(vendor.getVendorId())){
-                    vendor.addEvent(event);
-                }
-            }
-        }
-
-        for(Customer customer : customersList){
-            for(Ticket ticket : ticketsList){
-                if(ticket.getCustomer() != null) {
-                    if (ticket.getCustomer().getCustomerId().equals(customer.getCustomerId())) {
-                        customer.addTicket(ticket);
-                    }
-                }
-            }
-        }
-
-        for(Vendor vendor : vendorsList){
-            System.out.println(vendor.getEventsList());
-        }
-
-        Vendor v1 = vendorsList.get(0);
-        Vendor v2 = vendorsList.get(1);
 
         Customer c1 = customersList.get(0);
         Customer c2 = customersList.get(1);
 
+        Vendor v1 = vendorsList.get(0);
+        Vendor v2 = vendorsList.get(1);
 
 
-        c1.ticketBuyingProperties(ticketPool,7,3);
-        c2.ticketBuyingProperties(ticketPool,3,2);
 
-        v1.ticketSellingProcess(ticketPool,5,2);
-        v2.ticketSellingProcess(ticketPool,10,5);
+        c1.ticketBuyingProperties(ticketPool,7,appConfig.getCustomerRetrievalRate());
+        c2.ticketBuyingProperties(ticketPool,3,appConfig.getCustomerRetrievalRate());
 
-
+        v1.ticketSellingProcess(ticketPool,5,appConfig.getTicketReleaseRate());
+        v2.ticketSellingProcess(ticketPool,10,appConfig.getTicketReleaseRate());
 
         threadPoolManager.submitTask(v1);
         threadPoolManager.submitTask(v2);
         threadPoolManager.submitTask(c1);
         threadPoolManager.submitTask(c2);
-
 
     }
 }
