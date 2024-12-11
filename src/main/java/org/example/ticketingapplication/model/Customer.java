@@ -193,6 +193,10 @@ public class Customer implements Runnable {
                     if(buyingQuantity == 0){
                         stopCustomer();
                         break;
+
+                    } else if (!running) {
+                        break;
+
                     }
 
                 } catch (InterruptedException e) {

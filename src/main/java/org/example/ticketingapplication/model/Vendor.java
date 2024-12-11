@@ -213,6 +213,9 @@ public class Vendor implements Runnable {
 
                             if(totalTicketsToBeSold == 0){
                                 break;
+                            } else if (!running) {
+                                break;
+
                             }
 
                         } catch (InterruptedException e) {
@@ -224,6 +227,8 @@ public class Vendor implements Runnable {
 
                     if(totalTicketsToBeSold == 0){
                         stopVendor();
+                        break;
+                    } else if (!running) {
                         break;
                     }
                 }
