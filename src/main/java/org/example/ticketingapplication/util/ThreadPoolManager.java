@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 public class ThreadPoolManager {
 
     private static ThreadPoolExecutor executor;
-    private static volatile boolean isRunning = true;
 
     public ThreadPoolManager() {
         executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -43,25 +42,8 @@ public class ThreadPoolManager {
     }
 
     public static void shutdown() {
-        isRunning = false;
-        executor.shutdownNow(); // Force immediate shutdown
-        try {
-            // Wait up to 5 seconds for tasks to terminate
-            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-                executor.shutdownNow();
-                if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-                    System.err.println("Thread pool did not terminate");
-                }
-            }
-        } catch (InterruptedException ie) {
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
-        System.out.println("ThreadPool has been shut down completely!");
-    }
-
-    public static boolean isRunning() {
-        return isRunning;
+        executor.shutdownNow();
+        System.out.println("ThreadPool has been shut down!");
     }
 
     public int getPoolSize() {

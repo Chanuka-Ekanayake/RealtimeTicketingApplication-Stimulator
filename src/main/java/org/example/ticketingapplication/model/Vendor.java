@@ -194,52 +194,43 @@ public class Vendor implements Runnable {
 
         int totalTicketsAdded = 0;
 
-        while (!Thread.currentThread().isInterrupted() && ThreadPoolManager.isRunning()) {
-            try {
-                if(eventsList.isEmpty()){
-                    System.out.println("Event list is empty for the Vendor! Please add Events and Tickets to interact with the TicketPool!");
-                }else {
-                    for (Event event : eventsList) {
-                        for (Ticket ticket : event.getTickets()) {
-                            try {
-                                ticketPool.addTicket(ticket, vendorName);
+        while (running && totalTicketsToBeSold != 0) {
 
-                                totalTicketsAdded++;
-                                totalTicketsToBeSold--;
+            if(eventsList.isEmpty()){
+                System.out.println("Event list is empty for the Vendor! Please add Events and Tickets to interact with the TicketPool!");
+            }else {
+                for (Event event : eventsList) {
+                    for (Ticket ticket : event.getTickets()) {
+                        try {
+                            ticketPool.addTicket(ticket, vendorName);
 
-                                if (totalTicketsAdded % ticketReleaseRate == 0) {
-                                    Thread.sleep(ticketReleaseRate * 300L); //Sleep More than customers to make tickets Demanding
-                                }
+                            totalTicketsAdded++;
+                            totalTicketsToBeSold--;
 
-                                if(totalTicketsToBeSold == 0){
-                                    break;
-                                } else if (!running) {
-                                    break;
-                                }
-
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                System.out.println("Vendor - " + vendorName + " is interrupted!");
-                                System.out.println(e.getMessage());
+                            if (totalTicketsAdded % ticketReleaseRate == 0) {
+                                Thread.sleep(ticketReleaseRate * 300L); //Sleep More than customers to make tickets Demanding
                             }
-                        }
 
-                        if(totalTicketsToBeSold == 0){
-                            stopVendor();
-                            break;
-                        } else if (!running) {
-                            break;
+                            if(totalTicketsToBeSold == 0){
+                                break;
+                            } else if (!running) {
+                                break;
+                            }
+
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            System.out.println("Vendor - " + vendorName + " is interrupted!");
+                            System.out.println(e.getMessage());
                         }
                     }
+
+                    if(totalTicketsToBeSold == 0){
+                        stopVendor();
+                        break;
+                    } else if (!running) {
+                        break;
+                    }
                 }
-                if (!ThreadPoolManager.isRunning()) {
-                    break;
-                }
-                // Add small sleep to allow interruption
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
             }
         }
         System.out.println("No. of tickets added by "+vendorName+": " + totalTicketsAdded);

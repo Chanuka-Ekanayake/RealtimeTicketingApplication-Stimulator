@@ -2,7 +2,6 @@ package org.example.ticketingapplication.model;
 
 
 import jakarta.persistence.*;
-import org.example.ticketingapplication.util.ThreadPoolManager;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -174,54 +173,42 @@ public class Customer implements Runnable {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted() && ThreadPoolManager.isRunning()) {
-            try {
-                if(ticketPool == null || buyingQuantity == 0 || customerRetrievalRate == 0) {
-//                    System.out.println("Please initialise the TicketPool, Buying Quantity and customerRetrievalRate to buy tickets from the TicketPool");
-                    stopCustomer();
-                }
-                this.running = true;
-                while(running && buyingQuantity > 0) {
-                    System.out.println("Customer "+customerName+" started buying tickets");
+        if(ticketPool == null || buyingQuantity == 0 || customerRetrievalRate == 0) {
+            System.out.println("Please initialise the TicketPool, Buying Quantity and customerRetrievalRate to buy tickets from the TicketPool");
+            stopCustomer();
+        }
+        this.running = true;
+        while(running && buyingQuantity > 0) {
+            System.out.println("Customer "+customerName+" started buying tickets");
 
-                    for (int i = 0; i < buyingQuantity; i++) {
-                        try {
-                            ticketPool.buyTicket(this);
-                            buyingQuantity--;
+            for (int i = 0; i < buyingQuantity; i++) {
+                try {
+                    ticketPool.buyTicket(this);
+                    buyingQuantity--;
 
-                            if(buyingQuantity % customerRetrievalRate == 0){
-                                Thread.sleep(this.isVIP ? customerRetrievalRate*500L : customerRetrievalRate*1000L); //Customer Sleep less than vendors to make the demand on tickets.(Ensure the ticketPool will not be filled)
-                            }
-
-                            if(buyingQuantity == 0){
-                                stopCustomer();
-                                break;
-
-                            } else if (!running) {
-                                break;
-                            }
-
-
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            System.out.println("Customer "+customerName+" was interrupted");
-                            System.out.println(e.getMessage());
-                        }
+                    if(buyingQuantity % customerRetrievalRate == 0){
+                        Thread.sleep(this.isVIP ? customerRetrievalRate*500L : customerRetrievalRate*1000L); //Customer Sleep less than vendors to make the demand on tickets.(Ensure the ticketPool will not be filled)
                     }
-                }
 
-                System.out.println("Customer "+customerName+" stopped buying tickets");
+                    if(buyingQuantity == 0){
+                        stopCustomer();
+                        break;
 
-                if (!ThreadPoolManager.isRunning()) {
-                    break;
+                    } else if (!running) {
+                        break;
+                    }
+
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.out.println("Customer "+customerName+" was interrupted");
+                    System.out.println(e.getMessage());
                 }
-                // Add small sleep to allow interruption
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
             }
         }
+
+        System.out.println("Customer "+customerName+" stopped buying tickets");
+
     }
 
     public void stopCustomer() {
