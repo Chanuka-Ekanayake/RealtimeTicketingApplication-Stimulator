@@ -6,6 +6,7 @@ package org.example.ticketingapplication.util;
  */
 
 
+import jakarta.validation.constraints.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,11 @@ public class SystemLogger {
 
     // Log an info message
     public void logInfo(String message) {
-        logger.info(message);
+        try {
+            logger.info(message);
+        }catch (NullPointerException npe) {
+            System.out.println("-");
+        }
     }
 
     // Log a warning message

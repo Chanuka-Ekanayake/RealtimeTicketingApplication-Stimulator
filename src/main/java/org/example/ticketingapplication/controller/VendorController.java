@@ -11,6 +11,7 @@ package org.example.ticketingapplication.controller;
 
 import org.example.ticketingapplication.model.Vendor;
 import org.example.ticketingapplication.repository.VendorRepository;
+import org.example.ticketingapplication.service.VendorCustomerManager;
 import org.example.ticketingapplication.util.SystemLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,8 @@ public class VendorController {
 
     @Autowired
     private SystemLogger systemLogger;
+
+    private final VendorCustomerManager vendorCustomerManager = new VendorCustomerManager();
 
     // Get all vendors
     @GetMapping
@@ -73,6 +76,25 @@ public class VendorController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // Dynamic vendor operations with distinct endpoints
+    @PostMapping("/dynamicAdd")
+    public Vendor addDynamicVendor(@RequestBody String VendorName, String VendorEmail) {
+        systemLogger.logInfo("Adding a dynamic vendor: " + VendorName);
+        Vendor vendor = vendorCustomerManager.addVendor(VendorName, VendorEmail);
+        return vendorRepository.save(vendor);
+    }
+
+    @DeleteMapping("/dynamicRemove")
+    public ResponseEntity<Void> deleteDynamicVendor(@RequestBody String VendorName, String VendorEmail) {
+        for (Vendor vendor : vendorRepository.findAll()) {
+            if (vendor.getVendorName().equals(VendorName) && vendor.getVendorEmail().equals(VendorEmail)) {
+                vendorRepository.delete(vendor);
+                break;
+            }
+        }
+        return ResponseEntity.noContent().build();
     }
 }
 

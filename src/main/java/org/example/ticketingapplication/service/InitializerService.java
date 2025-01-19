@@ -18,23 +18,24 @@ import java.util.List;
 @Service
 public class InitializerService {
     private final CustomerRepository customerRepository;
-    private final VendorRepository vendorRepository;
-    private final TicketRepository ticketRepository;
-    private final EventRepository eventRepository;
+    private static VendorRepository vendorRepository;
+    private static TicketRepository ticketRepository;
+    private static EventRepository eventRepository;
+    private static  CustomerService customerService;
 
 
     public InitializerService(CustomerRepository customerRepository, VendorRepository vendorRepository,
-                              TicketRepository ticketRepository, EventRepository eventRepository) {
+                              TicketRepository ticketRepository, EventRepository eventRepository, CustomerService customerService) {
         this.customerRepository = customerRepository;
-        this.vendorRepository = vendorRepository;
-        this.ticketRepository = ticketRepository;
-        this.eventRepository = eventRepository;
-
+        InitializerService.vendorRepository = vendorRepository;
+        InitializerService.ticketRepository = ticketRepository;
+        InitializerService.eventRepository = eventRepository;
+        InitializerService.customerService = customerService;
     }
 
     // 1. Input data from the database
-    public List<Customer> loadCustomersFromDatabase() {
-        List<Customer> customersList = customerRepository.findAll();
+    public static List<Customer> loadCustomersFromDatabase() {
+        List<Customer> customersList = customerService.getAllCustomers();
 
         for(Customer customer : customersList){
             for(Ticket ticket : ticketRepository.findAll()){
@@ -49,7 +50,7 @@ public class InitializerService {
 
     }
 
-    public List<Vendor> loadVendorsFromDatabase() {
+    public static List<Vendor> loadVendorsFromDatabase() {
         List<Vendor> vendorsList = vendorRepository.findAll();
 
         for(Vendor vendor : vendorsList){
@@ -67,11 +68,11 @@ public class InitializerService {
         return vendorsList;
     }
 
-    public List<Ticket> loadTicketsFromDatabase() {
+    public static List<Ticket> loadTicketsFromDatabase() {
         return ticketRepository.findAll();
     }
 
-    public List<Event> loadEventsFromDatabase() {
+    public static List<Event> loadEventsFromDatabase() {
         List<Event> eventList = eventRepository.findAll();
 
         for(Event event : eventList){

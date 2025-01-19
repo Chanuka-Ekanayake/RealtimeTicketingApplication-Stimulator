@@ -56,7 +56,7 @@ public class VendorCustomerManager {
     }
 
     // Add a new vendor
-    public void addVendor(String vendorName, String vendorEmail) {
+    public Vendor addVendor(String vendorName, String vendorEmail) {
         Vendor newVendor = vendorService.createVendor(vendorName, vendorEmail);
         activeVendors.put(newVendor.getVendorId(), newVendor);
 
@@ -69,25 +69,26 @@ public class VendorCustomerManager {
 
         threadPoolManager.submitTask(newVendor);
         System.out.println("Vendor added and task started: " + vendorName);
+        return newVendor;
     }
 
 
     // Remove an existing vendor
-    public void removeVendor (String vendorName){
-        Vendor vendor = activeVendors.remove(vendorName);
+    public void removeVendor (String vendorId){
+        Vendor vendor = activeVendors.remove(vendorId);
         if (vendor != null) {
             vendor.stopVendor(); // Signal the task to stop
 
-            System.out.println("Vendor removed: " + vendorName);
+            System.out.println("Vendor removed: " + vendorId);
             vendorService.deleteVendorById(vendor.getVendorId());
 
         } else {
-            System.out.println("Vendor not found: " + vendorName);
+            System.out.println("Vendor not found: " + vendorId);
         }
     }
 
     // Add a new customer
-    public void addCustomer (String customerName, String customerEmail, Boolean isVIP) {
+    public Customer addCustomer (String customerName, String customerEmail, Boolean isVIP) {
         Customer newCustomer = customerService.createCustomer(customerName, customerEmail, isVIP);
         activeCustomers.put(newCustomer.getCustomerId(), newCustomer);
 
@@ -95,18 +96,19 @@ public class VendorCustomerManager {
 
         threadPoolManager.submitTask(newCustomer); // Submit the task to the thread pool
         System.out.println("Customer added and task started: " + customerName);
+        return newCustomer;
     }
 
     // Remove an existing customer
-    public void removeCustomer (String customerName){
-        Customer customer = activeCustomers.remove(customerName);
+    public void removeCustomer (String customerId){
+        Customer customer = activeCustomers.remove(customerId);
         if (customer != null) {
             customer.stopCustomer(); // Signal the task to stop
-            System.out.println("Customer removed: " + customerName);
+            System.out.println("Customer removed: " + customerId);
             customerService.deleteCustomer(customer.getCustomerId());
 
         } else {
-            System.out.println("Customer not found: " + customerName);
+            System.out.println("Customer not found: " + customerId);
         }
     }
 

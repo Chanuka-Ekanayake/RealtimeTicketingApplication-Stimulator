@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- - Implements customer-related operations.
-
+ * - Implements customer-related operations.
  */
 
 @Service
@@ -41,15 +40,15 @@ public class CustomerService {
 
     public void deleteCustomer(String id) {
         customerRepository.deleteById(id);
-        for(Ticket ticket : getCustomerById(id).getTickets()) {
+        for (Ticket ticket : getCustomerById(id).getTickets()) {
             ticket.setCustomer(null);
         }
     }
 
     public void deleteAllCustomers() {
         customerRepository.deleteAll();
-        for(Customer customer : customerRepository.findAll() ) {
-            for(Ticket ticket : customer.getTickets()) {
+        for (Customer customer : customerRepository.findAll()) {
+            for (Ticket ticket : customer.getTickets()) {
                 ticket.setCustomer(null);
             }
         }

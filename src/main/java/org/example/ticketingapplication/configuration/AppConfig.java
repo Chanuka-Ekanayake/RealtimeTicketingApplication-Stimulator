@@ -1,5 +1,6 @@
 package org.example.ticketingapplication.configuration;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
  */
 
+@Configuration
 @Component
 public class AppConfig {
 
